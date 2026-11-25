@@ -6,6 +6,14 @@
 (function () {
   'use strict';
 
+  /* ==========================================================================
+     COURSE ACCESS PASSWORD CONFIGURATION
+     To change the password in the future, simply edit the string below:
+     ========================================================================== */
+  const COURSE_PASSWORDS = [
+    'vibrations2026'   // <-- Change your password here
+  ];
+
   // --- Safe LocalStorage helpers ---
   function getStoredTheme() {
     try {
@@ -149,7 +157,146 @@
     });
   }
 
+  // --- Gatekeeper / Course Access Authentication ---
+  function isUserAuthenticated() {
+    try {
+      return sessionStorage.getItem('course_auth') === 'granted' || localStorage.getItem('course_auth') === 'granted';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function setAuthenticated(remember) {
+    try {
+      sessionStorage.setItem('course_auth', 'granted');
+      if (remember) {
+        localStorage.setItem('course_auth', 'granted');
+      }
+    } catch (e) {}
+  }
+
+  function clearAuthentication() {
+    try {
+      sessionStorage.removeItem('course_auth');
+      localStorage.removeItem('course_auth');
+    } catch (e) {}
+  }
+
+  function initGatekeeper() {
+    const isAuth = isUserAuthenticated();
+
+    // Setup Topbar Lock Button if topbar actions exist
+    const topbarActions = document.querySelector('.topbar-actions');
+    if (topbarActions && !document.getElementById('lock-portal-btn')) {
+      const lockBtn = document.createElement('button');
+      lockBtn.id = 'lock-portal-btn';
+      lockBtn.className = 'btn-nav btn-lock';
+      lockBtn.title = 'Lock course portal';
+      lockBtn.setAttribute('aria-label', 'Lock course portal');
+      lockBtn.innerHTML = '<span>🔒 Lock</span>';
+      lockBtn.onclick = function() {
+        clearAuthentication();
+        document.documentElement.classList.add('gatekeeper-locked');
+        initGatekeeper();
+      };
+      // Insert before theme toggle button
+      topbarActions.insertBefore(lockBtn, topbarActions.firstChild);
+    }
+
+    if (isAuth) {
+      document.documentElement.classList.remove('gatekeeper-locked');
+      const existing = document.getElementById('gatekeeper-screen');
+      if (existing) existing.remove();
+      return;
+    }
+
+    // Otherwise user is not authenticated: ensure locked class and show screen
+    document.documentElement.classList.add('gatekeeper-locked');
+
+    let screen = document.getElementById('gatekeeper-screen');
+    if (!screen) {
+      screen = document.createElement('div');
+      screen.id = 'gatekeeper-screen';
+      screen.className = 'gatekeeper-screen';
+      screen.innerHTML = `
+        <div class="gatekeeper-card">
+          <div class="gatekeeper-brand">
+            <span class="gatekeeper-mark">ω</span>
+            <h2>Mechanical Systems Dynamics</h2>
+            <div class="gatekeeper-sub">NMED 5XX / CS 401 · Student Access Gateway</div>
+          </div>
+          <div class="gatekeeper-divider"></div>
+          <p class="gatekeeper-desc">
+            This educational portal is restricted to authorized students. Please enter your course access password to continue.
+          </p>
+          <form id="gatekeeper-form" class="gatekeeper-form">
+            <div class="gatekeeper-field">
+              <label for="gatekeeper-input">Course Access Password</label>
+              <input type="password" id="gatekeeper-input" class="gatekeeper-input" placeholder="Enter password..." autocomplete="current-password" autofocus required>
+            </div>
+            <div id="gatekeeper-error" class="gatekeeper-error" style="display: none;">
+              ✗ Incorrect password. Please try again.
+            </div>
+            <div class="gatekeeper-remember">
+              <label>
+                <input type="checkbox" id="gatekeeper-remember" checked> Remember access on this browser
+              </label>
+            </div>
+            <button type="submit" id="gatekeeper-submit" class="gatekeeper-btn">
+              Unlock Course Portal &rarr;
+            </button>
+          </form>
+        </div>
+      `;
+      document.body.appendChild(screen);
+    }
+
+    const form = screen.querySelector('#gatekeeper-form');
+    const input = screen.querySelector('#gatekeeper-input');
+    const errorMsg = screen.querySelector('#gatekeeper-error');
+    const rememberBox = screen.querySelector('#gatekeeper-remember');
+    const card = screen.querySelector('.gatekeeper-card');
+
+    if (input) {
+      setTimeout(() => input.focus(), 100);
+      input.oninput = function() {
+        errorMsg.style.display = 'none';
+        input.classList.remove('error');
+      };
+    }
+
+    if (form) {
+      form.onsubmit = function(e) {
+        e.preventDefault();
+        const entered = (input.value || '').trim();
+        const matches = COURSE_PASSWORDS.some(p => p.toLowerCase() === entered.toLowerCase());
+
+        if (matches) {
+          setAuthenticated(rememberBox && rememberBox.checked);
+          screen.classList.add('unlocked');
+          document.documentElement.classList.remove('gatekeeper-locked');
+          setTimeout(() => {
+            if (screen.parentNode) screen.parentNode.removeChild(screen);
+            // Trigger window resize so canvases recalculate their bounds properly
+            window.dispatchEvent(new Event('resize'));
+            if (window.VibrationsSim && window.VibrationsSim.runAll) {
+              window.VibrationsSim.runAll();
+            }
+          }, 350);
+        } else {
+          errorMsg.style.display = 'block';
+          input.classList.add('error');
+          card.classList.remove('shake');
+          void card.offsetWidth; // Trigger reflow
+          card.classList.add('shake');
+          input.select();
+        }
+      };
+    }
+  }
+
   function runAll() {
+    try { initGatekeeper(); } catch(e) { console.error('initGatekeeper error:', e); }
     try { initTheme(); } catch(e) { console.error('initTheme error:', e); }
     try { renderMath(); } catch(e) { console.error('renderMath error:', e); }
     try { initScrollSpy(); } catch(e) { console.error('initScrollSpy error:', e); }

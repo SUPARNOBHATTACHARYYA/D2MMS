@@ -45,6 +45,25 @@ ul.task-list li input[type="checkbox"] {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
 
+<style id="gatekeeper-pre-style">
+  .gatekeeper-locked body {
+    overflow: hidden !important;
+  }
+  .gatekeeper-locked body > *:not(#gatekeeper-screen) {
+    display: none !important;
+  }
+</style>
+<script>
+(function() {
+  try {
+    var isAuth = sessionStorage.getItem('course_auth') === 'granted' || localStorage.getItem('course_auth') === 'granted';
+    if (!isAuth) {
+      document.documentElement.classList.add('gatekeeper-locked');
+    }
+  } catch(e) {}
+})();
+</script>
+
 <script>
 (function() {
   var isSub = window.location.pathname.indexOf('/lectures/') !== -1;

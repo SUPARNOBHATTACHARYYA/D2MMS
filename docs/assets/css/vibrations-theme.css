@@ -219,6 +219,22 @@ code, pre, .mono, .scrubber-val, .param-val, .step-badge, .kpi-val, .live-eq-ban
   background: var(--copper);
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 820px) {
+  .chapter-nav {
+    display: none;
+  }
+  .topbar-inner {
+    padding: 8px 16px;
+  }
+}
+
 .btn-nav {
   padding: 6px 14px;
   font-size: 12.5px;
@@ -660,4 +676,213 @@ pre.code-block {
 
 .footer-inner a:hover {
   color: #ffffff;
+}
+
+/* ==========================================================================
+   GATEKEEPER / COURSE ACCESS PASSWORD LOCK SCREEN
+   ========================================================================== */
+.gatekeeper-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background-color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
+}
+
+.gatekeeper-screen.unlocked {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+.gatekeeper-card {
+  max-width: 460px;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 38px 32px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.gatekeeper-card.shake {
+  animation: gatekeeper-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes gatekeeper-shake {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+  40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+.gatekeeper-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.gatekeeper-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--copper);
+  color: #ffffff;
+  font-family: var(--font-main);
+  font-size: 24px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(180, 98, 42, 0.3);
+}
+
+.gatekeeper-brand h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 4px 0 0;
+  border: none;
+  padding: 0;
+  color: var(--text);
+}
+
+.gatekeeper-sub {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.gatekeeper-divider {
+  width: 48px;
+  height: 3px;
+  background: var(--copper);
+  margin: 14px auto 20px;
+  border-radius: 2px;
+}
+
+.gatekeeper-desc {
+  font-size: 0.96rem;
+  line-height: 1.55;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.gatekeeper-form {
+  text-align: left;
+}
+
+.gatekeeper-field {
+  margin-bottom: 14px;
+}
+
+.gatekeeper-field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.gatekeeper-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gatekeeper-input:focus {
+  border-color: var(--copper);
+  box-shadow: 0 0 0 3px rgba(180, 98, 42, 0.15);
+}
+
+.gatekeeper-input.error {
+  border-color: var(--c-crimson);
+  box-shadow: 0 0 0 3px rgba(207, 34, 46, 0.15);
+}
+
+.gatekeeper-error {
+  color: var(--c-crimson);
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  background: rgba(207, 34, 46, 0.08);
+  border-left: 3px solid var(--c-crimson);
+  border-radius: 4px;
+}
+
+.gatekeeper-remember {
+  margin-bottom: 20px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.gatekeeper-remember label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.gatekeeper-btn {
+  width: 100%;
+  padding: 13px 18px;
+  background: var(--copper);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(180, 98, 42, 0.25);
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.gatekeeper-btn:hover {
+  background: var(--copper-deep);
+}
+
+.gatekeeper-btn:active {
+  transform: translateY(1px);
+}
+
+.gatekeeper-note {
+  margin-top: 18px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.gatekeeper-note code {
+  background: var(--surface-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--copper);
+}
+
+/* Lock Button in Topbar */
+.btn-lock {
+  border-color: var(--border) !important;
+  color: var(--text-muted) !important;
+}
+
+.btn-lock:hover {
+  border-color: var(--copper) !important;
+  color: var(--copper) !important;
 }
