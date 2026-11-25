@@ -1,0 +1,1639 @@
+# Milestone 2 Exploration Report: CSS Architecture for University Lecture Portal
+
+**Author**: Explorer 1 (`explorer_m2_1`)  
+**Mission**: Milestone 2 — Frontend UI/UX & Dual Lecture Workspace CSS Architecture  
+**Working Directory**: `e:\Active Website\Lecture website`  
+**State Folder**: `C:\Users\iamjo\.gemini\antigravity\scratch\teamwork\2636b859-5656-48b7-b989-02ac37fb3537\.agents\teamwork\explorer_m2_1\`  
+**Target File**: `assets/styles.css`  
+
+---
+
+## 1. Observation
+
+### 1.1 Verbatim Requirements from `ORIGINAL_REQUEST.md`
+- **R2 (UI/UX Design and Dual Lecture Workspace)**:
+  - Line 21: *"High-contrast minimalist academic visual style (off-white paper surface, deep slate ink, restrained academic accent, sans-serif UI font with monospace for code/numbers), with full Light/Dark mode toggle persisted in `localStorage`."*
+  - Line 22: *"Home Page (`index.qmd`): Course header (title, instructor, semester, description), instant client-side search/filter bar (lecture number, title, topic tag), and structured lecture list with badges and direct links."*
+  - Line 24: *"Top navigation bar: Back to All Lectures, lecture selector dropdown/sidebar, layout switcher (`Split View` | `Slides Only` | `Notebook Only`), download buttons for PDF and `.ipynb`, and Light/Dark toggle."*
+  - Line 25: *"Desktop Default (`Split View`): Full-height resizable side-by-side workspace with draggable divider persisted in `localStorage`. Left pane embeds Beamer PDF viewer with zoom/page controls, fullscreen button, and mobile/unsupported browser fallback link. Right pane embeds JupyterLite single-notebook view."*
+  - Line 26: *"Status banner / notices: Subtle loading note when Python starts ("Starting Python in your browser — first load takes ~10 seconds") and notice: 'Your edits stay in your browser — click File → Download to save your work.'*
+  - Line 27: *"Responsive behavior: Automatically switch from split-pane to top tabs (`Slides` / `Notebook`) on mobile and tablet screens."*
+  - Line 28: *"Optional extras per lecture: Collapsible 'Key Takeaways / Practice Tasks' section if defined in lecture metadata."*
+- **Acceptance Criteria**:
+  - Line 58: *"Home page client-side search/filter filters lectures by number, title, and tags without page reload."*
+  - Line 59: *"Light/Dark mode toggle switches themes and persists preference across page reloads in `localStorage`."*
+  - Line 60: *"Lecture 01 workspace loads Beamer PDF in the left pane and JupyterLite single-notebook interface in the right pane under Split View."*
+  - Line 61: *"Split-pane vertical divider is draggable and persists position across reloads in `localStorage`."*
+  - Line 62: *"Layout switcher switches between `Split View`, `Slides Only`, and `Notebook Only`."*
+  - Line 63: *"Mobile/tablet viewports switch from split-pane to tabs (`Slides` and `Notebook`)."*
+
+### 1.2 Verbatim Contracts from `PROJECT.md` & `SCOPE.md`
+- **`PROJECT.md` Lines 48-52**:
+  - *"Quarto renders `index.qmd` and `lectures/*/index.qmd` using `format.html.theme: none` and `css: assets/styles.css`."*
+  - *"Quarto copies `assets/` and `lectures/**` to `_site/` preserving directory structure."*
+- **`SCOPE.md` Lines 4-8, 31-33**:
+  - *"Custom CSS design tokens in `assets/styles.css` embodying Swiss Modernism 2.0 / Academic style, light/dark mode support, responsive layouts, resizable split view, and mobile tabs."*
+  - *"Dual workspace styling in `assets/styles.css` applies to `.workspace-layout`, `.workspace-container`, `.pane-slides`, `.pane-notebook`, `.workspace-divider`, `.mobile-tab-bar`, `.workspace-status-banner`, `.takeaways-drawer`."*
+
+### 1.3 Survey 2 Finding on Pointer Events Trapping
+- **`explorer_survey_2/handoff.md` Lines 344-358**:
+  - Dragging a divider over an `<iframe>` (JupyterLite) or `<object>` (PDF viewer) causes child documents to intercept cursor pointer events, breaking mouse tracking during resize.
+  - Required CSS shielding rule:
+    ```css
+    body.is-resizing iframe,
+    body.is-resizing object {
+      pointer-events: none !important;
+    }
+    ```
+
+---
+
+## 2. Logic Chain & Blueprint Specification
+
+### 2.1 Swiss Modernism 2.0 / Academic Design Token Architecture
+
+#### Core Principles
+1. **Content-First Typography**: Use system fonts to eliminate web font downloading overhead (zero latency, zero layout shift / CLS = 0).
+2. **Parchment & Ink Metaphor**: Light mode uses high-grade academic paper (`#F8F9FA` body, `#FFFFFF` cards) with deep slate ink (`#0F172A`). Dark mode uses deep obsidian ink (`#0B0F17`) with slate cards (`#151D2A`) and crisp text (`#F8FAFC`).
+3. **Scholarly Hierarchy**: Restrained accents using Oxford/Cambridge Scholarly Navy (`#1E3A5F` in light, `#38BDF8` in dark) and Citation Amber (`#B45309` in light, `#FBBF24` in dark).
+4. **Strict Contrast Compliance**: Normal body text exceeds 4.5:1 (WCAG AA), primary headlines reach 14–16:1 (WCAG AAA).
+
+#### Complete Tokens (`:root` and `[data-theme="dark"]`)
+```css
+/* ==========================================================================
+   1. DESIGN TOKENS (SWISS MODERNISM 2.0 / ACADEMIC)
+   ========================================================================== */
+
+:root {
+  /* Typography Stacks */
+  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-serif: "Newsreader", Charter, "Bitstream Charter", Cambria, Georgia, serif;
+
+  /* Type Scale */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+
+  /* Spacing Scale (4px / 8px grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  /* Dimensions */
+  --navbar-height: 52px;
+  --mobile-tab-height: 48px;
+  --divider-width: 6px;
+  --touch-target-min: 44px;
+
+  /* Light Theme Surfaces (Academic Paper / Slate) */
+  --bg-app: #F8F9FA;
+  --bg-surface: #FFFFFF;
+  --bg-surface-raised: #FFFFFF;
+  --bg-surface-subtle: #F1F5F9;
+  --bg-backdrop: rgba(15, 23, 42, 0.4);
+
+  /* Light Theme Typography / Ink */
+  --text-primary: #0F172A;       /* Slate 900 (16.1:1 AAA) */
+  --text-secondary: #475569;     /* Slate 600 (7.0:1 AAA) */
+  --text-muted: #5A6A80;         /* Slate 500+ adjusted (4.9:1 AA) */
+
+  /* Light Theme Borders & Dividers */
+  --border-subtle: #E2E8F0;      /* Slate 200 */
+  --border-medium: #CBD5E1;      /* Slate 300 */
+  --border-focus: #1E3A5F;
+  --divider-bg: #E2E8F0;
+  --divider-hover: #94A3B8;
+  --divider-active: #1E3A5F;
+
+  /* Light Theme Academic Accents */
+  --accent-navy: #1E3A5F;        /* Scholarly Navy */
+  --accent-navy-hover: #152C48;
+  --accent-navy-text: #FFFFFF;
+  --accent-amber: #B45309;       /* Citation Amber */
+  --accent-amber-bg: #FEF3C7;    /* Warm Amber Tint */
+  --accent-amber-text: #92400E;  /* Amber Contrast Text (6.3:1 AA) */
+  --accent-blue-bg: #E0F2FE;
+  --accent-blue-text: #0369A1;
+
+  /* Status Colors */
+  --status-success-bg: #DCFCE7;
+  --status-success-text: #166534;
+  --status-warning-bg: #FEF3C7;
+  --status-warning-text: #92400E;
+
+  /* Shadows & Focus */
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --focus-ring: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--accent-navy);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Surfaces (Deep Obsidian Ink / Slate) */
+  --bg-app: #0B0F17;
+  --bg-surface: #151D2A;
+  --bg-surface-raised: #1E293B;
+  --bg-surface-subtle: #1A2433;
+  --bg-backdrop: rgba(0, 0, 0, 0.7);
+
+  /* Dark Theme Typography */
+  --text-primary: #F8FAFC;       /* Slate 50 (14.3:1 AAA) */
+  --text-secondary: #94A3B8;     /* Slate 400 (5.8:1 AA) */
+  --text-muted: #8899A6;         /* Adjusted Muted (4.8:1 AA) */
+
+  /* Dark Theme Borders & Dividers */
+  --border-subtle: #243044;
+  --border-medium: #334155;
+  --border-focus: #38BDF8;
+  --divider-bg: #243044;
+  --divider-hover: #475569;
+  --divider-active: #38BDF8;
+
+  /* Dark Theme Academic Accents */
+  --accent-navy: #38BDF8;        /* Sky 400 (High contrast in dark) */
+  --accent-navy-hover: #7DD3FC;
+  --accent-navy-text: #0B0F17;
+  --accent-amber: #FBBF24;
+  --accent-amber-bg: #451A03;
+  --accent-amber-text: #FDE68A;  /* (7.8:1 AAA) */
+  --accent-blue-bg: #082F49;
+  --accent-blue-text: #BAE6FD;
+
+  /* Status Colors */
+  --status-success-bg: #052E16;
+  --status-success-text: #BBF7D0;
+  --status-warning-bg: #451A03;
+  --status-warning-text: #FDE68A;
+
+  /* Shadows & Focus */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+  --focus-ring: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--accent-navy);
+}
+```
+
+---
+
+### 2.2 Global Reset & Quarto Page Overrides
+Quarto injects container divs like `#quarto-content`, `.page-columns`, etc. To ensure the dual lecture workspace behaves as a full-viewport application without unwanted scrollbars, custom page layout overrides are required:
+
+```css
+/* ==========================================================================
+   2. GLOBAL BASE & QUARTO RESET
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--bg-app);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text-primary);
+  background-color: var(--bg-app);
+  overflow-x: hidden;
+}
+
+/* Quarto Custom Page Reset (used by lectures/*/index.qmd with page-layout: custom) */
+body.page-layout-custom,
+body:has(.workspace-layout) {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body:has(.workspace-layout) #quarto-content,
+body:has(.workspace-layout) main {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Accessible Visually Hidden Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+```
+
+---
+
+### 2.3 Dual-Workspace Layout Classes
+
+The workspace is a column flexbox with:
+1. Fixed 52px Navbar
+2. Dismissible Status Banner
+3. Collapsible Takeaways Drawer
+4. Flex-grow container holding the side-by-side panes and divider
+
+```css
+/* ==========================================================================
+   3. DUAL-WORKSPACE LAYOUT CLASSES
+   ========================================================================== */
+
+.workspace-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-app);
+}
+
+/* Fixed Top Navbar */
+.workspace-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--navbar-height);
+  padding: 0 var(--space-4);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 30;
+  gap: var(--space-3);
+}
+
+.navbar-left,
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.navbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Back Link & Lecture Selector */
+.nav-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  min-height: var(--touch-target-min);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.nav-back-link:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface-subtle);
+}
+
+.nav-back-link .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.lecture-selector-wrapper {
+  position: relative;
+}
+
+.lecture-selector {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--bg-surface-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  min-height: 36px;
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.lecture-selector:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--focus-ring);
+}
+
+/* Segmented Layout Switcher (Radio Group) */
+.layout-switcher {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2px;
+  gap: 2px;
+}
+
+.layout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  min-height: 32px;
+  user-select: none;
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.layout-btn:hover {
+  color: var(--text-primary);
+}
+
+.layout-btn.active,
+.layout-btn[aria-checked="true"] {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+}
+
+.layout-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.layout-btn .icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Navbar Buttons & Download Links */
+.action-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  min-height: 32px;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-nav:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface-subtle);
+  border-color: var(--border-medium);
+}
+
+.btn-nav .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-icon:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface-subtle);
+}
+
+.btn-icon:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Theme Toggle Icons */
+.theme-toggle .icon-moon {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+.theme-toggle .icon-sun {
+  display: none;
+  width: 16px;
+  height: 16px;
+}
+
+[data-theme="dark"] .theme-toggle .icon-moon {
+  display: none;
+}
+[data-theme="dark"] .theme-toggle .icon-sun {
+  display: block;
+}
+
+/* Workspace Main Container */
+.workspace-container {
+  display: flex;
+  flex: 1 1 0%;
+  width: 100%;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-app);
+}
+
+/* Workspace Panes */
+.workspace-pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--bg-surface);
+  position: relative;
+}
+
+.pane-slides {
+  width: var(--split-slides-width, 50%);
+  min-width: 280px;
+  max-width: 85%;
+  border-right: none;
+}
+
+.pane-notebook {
+  flex: 1 1 0%;
+  min-width: 320px;
+}
+
+/* Pane Header Bar */
+.pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  padding: 0 var(--space-3);
+  background-color: var(--bg-surface-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.pane-header-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pane-header-title h2 {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.pane-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  background-color: var(--accent-amber-bg);
+  color: var(--accent-amber-text);
+  border-radius: var(--radius-sm);
+}
+
+.pane-badge.badge-notebook {
+  background-color: var(--accent-blue-bg);
+  color: var(--accent-blue-text);
+}
+
+.pane-header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.pane-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.pane-ctrl-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--border-subtle);
+}
+
+.pane-ctrl-btn .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.pane-content {
+  flex: 1 1 0%;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Embedded PDF Viewer */
+.pdf-viewer {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background-color: var(--bg-surface-subtle);
+}
+
+.pdf-fallback-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-8);
+  text-align: center;
+  background-color: var(--bg-surface);
+  color: var(--text-secondary);
+}
+
+.pdf-fallback-box h3 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.pdf-fallback-box p {
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+  max-width: 400px;
+}
+
+.fallback-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Embedded JupyterLite Iframe */
+.notebook-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background-color: var(--bg-surface);
+}
+```
+
+---
+
+### 2.4 Resizable Draggable Divider & Pointer-Events Overlay Shielding
+
+When the user drags the divider, pointer events must not get lost over the PDF or iframe:
+
+```css
+/* ==========================================================================
+   4. DRAGGABLE DIVIDER & POINTER-EVENTS SHIELDING
+   ========================================================================== */
+
+.workspace-divider {
+  width: var(--divider-width);
+  background-color: var(--divider-bg);
+  cursor: col-resize;
+  position: relative;
+  user-select: none;
+  touch-action: none;
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast);
+  z-index: 20;
+}
+
+/* Invisible 14px Hit Target for Touch & Mouse Dragging */
+.workspace-divider::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  right: -4px;
+  z-index: 25;
+}
+
+.workspace-divider:hover,
+.workspace-divider:focus-visible,
+body.is-resizing .workspace-divider {
+  background-color: var(--divider-active);
+}
+
+.workspace-divider:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Center Grip Indicator Handle */
+.divider-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--text-muted);
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity var(--transition-fast), height var(--transition-fast), background-color var(--transition-fast);
+}
+
+.workspace-divider:hover .divider-handle,
+.workspace-divider:focus-visible .divider-handle,
+body.is-resizing .divider-handle {
+  opacity: 1;
+  height: 52px;
+  background-color: var(--accent-navy-text);
+}
+
+/* CRITICAL POINTER-EVENTS RESIZING SHIELD */
+body.is-resizing {
+  user-select: none !important;
+  cursor: col-resize !important;
+}
+
+body.is-resizing iframe,
+body.is-resizing object,
+body.is-resizing embed {
+  pointer-events: none !important;
+}
+```
+
+---
+
+### 2.5 Layout Switcher View States
+
+The 3 layout states dynamically adjust pane widths and divider visibility:
+
+```css
+/* ==========================================================================
+   5. LAYOUT SWITCHER VIEW STATES
+   ========================================================================== */
+
+/* State 1: Split View (Default) */
+.workspace-container.layout-split .pane-slides {
+  display: flex !important;
+  width: var(--split-slides-width, 50%);
+  min-width: 280px;
+  max-width: 85%;
+}
+
+.workspace-container.layout-split .workspace-divider {
+  display: flex !important;
+}
+
+.workspace-container.layout-split .pane-notebook {
+  display: flex !important;
+  flex: 1 1 0%;
+  min-width: 320px;
+}
+
+/* State 2: Slides Only */
+.workspace-container.layout-slides .pane-slides {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 100% !important;
+}
+
+.workspace-container.layout-slides .workspace-divider {
+  display: none !important;
+}
+
+.workspace-container.layout-slides .pane-notebook {
+  display: none !important;
+}
+
+/* State 3: Notebook Only */
+.workspace-container.layout-notebook .pane-slides {
+  display: none !important;
+}
+
+.workspace-container.layout-notebook .workspace-divider {
+  display: none !important;
+}
+
+.workspace-container.layout-notebook .pane-notebook {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: 1 1 100% !important;
+}
+```
+
+---
+
+### 2.6 Responsive Mobile/Tablet Styles (`@media (max-width: 900px)`)
+
+On screens 900px and narrower, split view collapses into tabs (`Slides` and `Notebook`), touch targets expand to at least 44px, and the divider is completely removed:
+
+```css
+/* ==========================================================================
+   6. RESPONSIVE MOBILE/TABLET STYLES (@media (max-width: 900px))
+   ========================================================================== */
+
+/* Desktop State: Tab bar is hidden */
+.mobile-tab-bar {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  /* Hide Desktop Layout Switcher in Navbar */
+  .layout-switcher {
+    display: none;
+  }
+
+  /* Compact Navbar */
+  .workspace-navbar {
+    padding: 0 var(--space-3);
+  }
+
+  .lecture-selector {
+    max-width: 180px;
+    font-size: var(--text-xs);
+  }
+
+  /* Show Mobile Tab Bar */
+  .mobile-tab-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0 var(--space-2);
+    gap: var(--space-2);
+    height: var(--mobile-tab-height);
+    flex-shrink: 0;
+  }
+
+  .mobile-tab {
+    flex: 1;
+    height: var(--touch-target-min); /* 44px minimum touch target */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .mobile-tab:hover {
+    color: var(--text-primary);
+  }
+
+  .mobile-tab.active,
+  .mobile-tab[aria-selected="true"] {
+    color: var(--accent-navy);
+    border-bottom-color: var(--accent-navy);
+    font-weight: 600;
+  }
+
+  .mobile-tab:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--accent-navy);
+  }
+
+  .mobile-tab .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Hide Draggable Divider on Mobile */
+  .workspace-divider {
+    display: none !important;
+  }
+
+  /* Responsive Workspace Container Panes */
+  .workspace-container {
+    flex-direction: column;
+  }
+
+  /* Mobile Active Pane Control */
+  .workspace-container[data-mobile-active="slides"] .pane-slides {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  .workspace-container[data-mobile-active="slides"] .pane-notebook {
+    display: none !important;
+  }
+
+  .workspace-container[data-mobile-active="notebook"] .pane-slides {
+    display: none !important;
+  }
+
+  .workspace-container[data-mobile-active="notebook"] .pane-notebook {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+}
+```
+
+---
+
+### 2.7 Status Banner & Collapsible Takeaways Drawer
+
+```css
+/* ==========================================================================
+   7. STATUS BANNER & COLLAPSIBLE TAKEAWAYS DRAWER
+   ========================================================================== */
+
+/* Dismissible Status Banner */
+.workspace-status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--accent-amber-bg);
+  border-bottom: 1px solid var(--accent-amber);
+  color: var(--accent-amber-text);
+  font-size: var(--text-xs);
+  flex-shrink: 0;
+  z-index: 15;
+  transition: opacity var(--transition-fast);
+}
+
+.workspace-status-banner.is-dismissed {
+  display: none !important;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.banner-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  background-color: var(--accent-amber);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+[data-theme="dark"] .banner-pill {
+  background-color: var(--accent-amber);
+  color: #0B0F17;
+}
+
+.banner-text {
+  font-weight: 500;
+}
+
+.banner-divider {
+  color: var(--accent-amber);
+  opacity: 0.5;
+}
+
+.banner-note {
+  color: var(--accent-amber-text);
+}
+
+.banner-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--accent-amber-text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.banner-close:hover {
+  background-color: rgba(180, 83, 9, 0.15);
+}
+
+.banner-close:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Collapsible Takeaways Drawer (<details>/<summary>) */
+.takeaways-drawer {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  transition: background-color var(--transition-fast);
+}
+
+.takeaways-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  user-select: none;
+  list-style: none; /* Hide default triangle marker */
+  min-height: 38px;
+}
+
+.takeaways-summary::-webkit-details-marker {
+  display: none;
+}
+
+.takeaways-summary:hover {
+  background-color: var(--bg-surface-subtle);
+}
+
+.takeaways-summary:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent-navy);
+}
+
+.summary-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.icon-takeaways {
+  width: 16px;
+  height: 16px;
+  color: var(--accent-amber);
+}
+
+.summary-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.summary-toggle-indicator {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.summary-toggle-indicator::after {
+  content: "▾";
+  font-size: 14px;
+  transition: transform var(--transition-fast);
+}
+
+.takeaways-drawer[open] .summary-toggle-indicator::after {
+  transform: rotate(180deg);
+}
+
+.takeaways-body {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface-subtle);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 768px) {
+  .takeaways-body {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+.takeaways-section h4 {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-2);
+}
+
+.takeaways-section ul,
+.takeaways-section ol {
+  padding-left: var(--space-4);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.takeaways-section li {
+  margin-bottom: var(--space-1);
+}
+
+.takeaways-section code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  padding: 1px 4px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+```
+
+---
+
+### 2.8 Home Page Styling (`index.qmd`)
+
+The landing page features:
+1. Course Hero Header with Academic metadata
+2. Instant Search Bar & Topic Tag Chips
+3. Live Filter Counter & Empty State
+4. Structured Lecture Card Grid
+
+```css
+/* ==========================================================================
+   8. HOME PAGE STYLING (COURSE HERO, SEARCH BAR & CARD GRID)
+   ========================================================================== */
+
+.portal-home {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+/* Course Header Hero */
+.course-hero {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  margin-bottom: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-meta-badges {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.badge-code {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  background-color: var(--accent-navy);
+  color: var(--accent-navy-text);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.05em;
+}
+
+.badge-term {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-surface-subtle);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.hero-title {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.02em;
+}
+
+.hero-instructor {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.hero-description {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 780px;
+  margin-bottom: var(--space-6);
+}
+
+/* Quick Stats Bar */
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Search & Filter Toolbar */
+.search-filter-section {
+  margin-bottom: var(--space-8);
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--space-4);
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 var(--space-10) 0 var(--space-10);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--focus-ring);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-clear {
+  position: absolute;
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 20px;
+  line-height: 1;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.search-clear:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface-subtle);
+}
+
+/* Topic Tag Filter Chips */
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px var(--space-3);
+  min-height: 32px;
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.chip:hover {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.chip.active,
+.chip[aria-pressed="true"] {
+  background-color: var(--accent-navy);
+  color: var(--accent-navy-text);
+  border-color: var(--accent-navy);
+  font-weight: 600;
+}
+
+.chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.filter-status {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Structured Lecture Card Grid */
+.lecture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--space-6);
+}
+
+.lecture-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.lecture-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-medium);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5) 0 var(--space-5);
+}
+
+.card-lec-badge {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--accent-navy);
+  background-color: var(--accent-blue-bg);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.05em;
+}
+
+.card-date {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.card-body {
+  padding: var(--space-3) var(--space-5) var(--space-5) var(--space-5);
+  flex: 1;
+}
+
+.card-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: var(--space-2);
+}
+
+.card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-title a:hover {
+  color: var(--accent-navy);
+}
+
+.card-desc {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--space-4);
+}
+
+.card-tags {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent-amber-text);
+  background-color: var(--accent-amber-bg);
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+}
+
+/* Card Actions Footer */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--bg-surface-subtle);
+  border-top: 1px solid var(--border-subtle);
+  gap: var(--space-2);
+}
+
+.btn-open-workspace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-ui);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--accent-navy-text);
+  background-color: var(--accent-navy);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  min-height: 36px;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-open-workspace:hover {
+  background-color: var(--accent-navy-hover);
+}
+
+.btn-open-workspace:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.card-download-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.btn-card-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  min-height: 28px;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-card-download:hover {
+  color: var(--text-primary);
+  border-color: var(--border-medium);
+}
+
+/* Empty Search Results Message */
+.no-results-box {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  background-color: var(--bg-surface);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+}
+
+.no-results-box h3 {
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.no-results-box p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+```
+
+---
+
+### 2.9 Accessibility & Motion Preferences
+
+```css
+/* ==========================================================================
+   9. ACCESSIBILITY & PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+```
+
+---
+
+## 3. Caveats
+
+1. **Quarto Engine Theme Overrides**:
+   - `_quarto.yml` must explicitly specify `format.html.theme: none`. If Bootstrap or a Quarto built-in theme (`cosmo`, `flatly`, etc.) is activated, Bootstrap's CSS resets (`.navbar`, `.card`, `.badge`, `.container`) will clash with our bespoke Swiss Modernism tokens.
+2. **Dynamic Viewport Height on iOS Safari (`100vh` vs `100dvh`)**:
+   - iOS Safari changes visible viewport height when address bars collapse. Where supported, `height: 100dvh` is preferable for `.workspace-layout`, with `height: 100vh` as standard fallback:
+     ```css
+     height: 100vh;
+     height: 100dvh;
+     ```
+3. **Ghostscript Beamer PDF Rendering in Embedded `<object>`**:
+   - Native browser PDF viewers (Adobe/Chrome PDFium) do not permit external CSS injection into the PDF document itself. The background and rendering inside the PDF viewer are dictated by the PDF generator (Beamer). Lecture 01's Beamer template will use clean white/navy 16:9 slides to harmonize with the light and dark portal styling.
+4. **Iframe Drag Shielding Invalidation**:
+   - If JavaScript fails to add `.is-resizing` to `document.body` during `pointerdown`, or fails to remove it during `pointerup`, the cursor over iframe will freeze or remain unclickable. Explorer 2 must coordinate with this exact class name (`is-resizing`).
+
+---
+
+## 4. Conclusion
+
+1. The proposed CSS architecture cleanly achieves Swiss Modernism 2.0 / Academic style, zero layout shifts, zero webfont latency, and strict WCAG 2.2 AA / AAA contrast compliance.
+2. The CSS token structure decouples theming logic cleanly between `:root` (Light paper surface) and `[data-theme="dark"]` (Deep obsidian ink), enabling instant switching with zero FOUC via `assets/head.html`.
+3. The flexbox dual-workspace layout (`.workspace-layout`, `.workspace-container`, `.workspace-pane`, `.workspace-divider`) natively handles resizable splitting, full layout switching (`split`, `slides`, `notebook`), and smooth mobile collapse into 44px touch tabs (`.mobile-tab-bar`).
+4. The pointer-events shielding rule (`body.is-resizing iframe, body.is-resizing object { pointer-events: none !important; }`) solves the cross-document iframe event trapping issue.
+5. All 9 required design domains are fully specified and ready for direct implementation by Implementer 1.
+
+---
+
+## 5. Verification Method
+
+To verify the CSS architecture upon implementation:
+
+1. **Compile Static Portal**:
+   ```powershell
+   quarto render
+   ```
+   *Expected Result*: Quarto compiles `_site/assets/styles.css` without Dart Sass/Pandoc errors.
+
+2. **Visual & Contrast Verification (Light & Dark)**:
+   - Load `_site/index.html` in browser.
+   - Verify paper surface (`#F8F9FA`), card surface (`#FFFFFF`), text contrast (`#0F172A`).
+   - Toggle theme button. Verify dark mode displays deep obsidian (`#0B0F17`) and slate cards (`#151D2A`).
+   - Run Chrome DevTools Lighthouse Accessibility Audit. Verify contrast score is 100%.
+
+3. **Workspace Layout & Resizer Verification**:
+   - Open `_site/lectures/01-intro-example/index.html`.
+   - Drag divider. Inspect `body` in DevTools to confirm `.is-resizing` is added and `iframe` pointer-events become `none`.
+   - Switch layouts (`Split View`, `Slides Only`, `Notebook Only`). Confirm expected pane expansion and divider hiding.
+
+4. **Mobile Responsive Verification**:
+   - Set viewport to `<= 900px` (e.g. 768px tablet, 390px mobile).
+   - Verify `.workspace-divider` disappears.
+   - Verify `.mobile-tab-bar` appears with tab height >= 44px.
+   - Toggle tabs between `Slides (PDF)` and `Notebook (.ipynb)`. Confirm active pane fills 100% width.
+
+5. **Takeaways Drawer & Status Banner Verification**:
+   - Click `<summary>` on `.takeaways-drawer`. Confirm smooth arrow rotation and content expansion without JavaScript.
+   - Click close button on `.workspace-status-banner`. Confirm banner dismissal.

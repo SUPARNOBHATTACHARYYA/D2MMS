@@ -1,0 +1,16 @@
+number: 4
+title: "Eigen-Decomposition & DMD: State-Space & Modal Identification"
+slug: "04-eigen-decomposition"
+date: "2026-09-17"
+tags:
+  - "Eigenvalues"
+  - "State-Space"
+  - "DMD"
+  - "Modal Identification"
+takeaways:
+  - "Transform second-order equations into first-order continuous state-space form."
+  - "Analyze non-proportional damping and complex modal vectors."
+  - "Implement exact Dynamic Mode Decomposition (DMD) to extract modes directly from sensor data."
+tasks:
+  - "Construct snapshot matrices X and X_prime from transient vibration measurements."
+  - "Extract DMD eigenvalues and reconstructed continuous-time system modes."

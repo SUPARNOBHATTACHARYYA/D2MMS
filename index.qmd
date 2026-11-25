@@ -1,0 +1,218 @@
+---
+pagetitle: "Data-Driven Modelling for Mechanical Systems"
+page-layout: custom
+---
+
+```{=html}
+<header class="topbar">
+<div class="topbar-inner">
+<a href="./index.html" class="brand">
+<div class="brand-mark">ω</div>
+<div class="brand-meta">
+<div class="brand-title">Mechanical Systems Dynamics</div>
+<div class="brand-sub">NMED 5XX / CS 401 · Interactive Tutorials Hub</div>
+</div>
+</a>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light or Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<section class="hero-band">
+<div class="hero-inner">
+<div class="eyebrow">Graduate Mechanical Engineering · Fall Term 2026</div>
+<div class="copper-bar"></div>
+<h1>Data-Driven Modelling for Mechanical Systems</h1>
+<p class="hero-lead">
+A suite of interactive scientific computing tutorials connecting the theoretical foundations of 
+<span class="highlight-blue">vibrational mechanics</span>, 
+<span class="highlight-orange">spectral analysis</span>, and 
+<span class="highlight-teal">nonlinear dynamic systems</span> with live browser simulations, 
+diagnostic conceptual checkpoints, Beamer presentation slides, and runnable Python notebooks.
+</p>
+</div>
+</section>
+
+<main class="hub-wrap">
+<div class="section-header">
+<div class="section-tag">Course Syllabus & Laboratory Modules</div>
+<h2>Available Interactive Tutorials</h2>
+<p>Select any lecture module below to explore rigorous theoretical formulations, manipulate real-time physical simulation parameters, and access source lecture materials.</p>
+</div>
+
+<div class="tutorial-grid">
+
+<!-- Card 01 -->
+<article class="hub-card">
+<div class="hub-card-body">
+<div class="hub-card-kicker">Lecture 01 · 1-DOF Dynamics</div>
+<h3 class="hub-card-title">Why Does a Washing Machine Shake?</h3>
+<p class="hub-card-abstract">Model a 1-DOF mass-spring-damper oscillator excited by rotating unbalance. Explore resonance, phase lag inversion, and passive self-isolation across spin speeds.</p>
+<div class="hub-card-tags">
+<span class="hub-tag">#ForcedVibration</span>
+<span class="hub-tag">#Resonance</span>
+<span class="hub-tag">#RotatingImbalance</span>
+<span class="hub-tag">#Isolation</span>
+</div>
+</div>
+<div class="hub-card-footer">
+<a href="./lectures/01-washing-machine-shake/index.html" class="hub-card-link">Open interactive tutorial ↗</a>
+<div class="hub-card-downloads">
+<a href="./lectures/01-washing-machine-shake/slides.pdf" download title="Download Slides PDF">PDF</a> · 
+<a href="./lectures/01-washing-machine-shake/notebook.ipynb" download title="Download Notebook">.ipynb</a>
+</div>
+</div>
+</article>
+
+<!-- Card 02 -->
+<article class="hub-card">
+<div class="hub-card-body">
+<div class="hub-card-kicker">Lecture 02 · Signal Processing</div>
+<h3 class="hub-card-title">Fourier Transform and FFT</h3>
+<p class="hub-card-abstract">From continuous time series to discrete linear spectra. Master the DFT, O(N log N) Cooley-Tukey algorithm, the Nyquist-Shannon limit, and windowing functions.</p>
+<div class="hub-card-tags">
+<span class="hub-tag">#FFT</span>
+<span class="hub-tag">#SpectralAnalysis</span>
+<span class="hub-tag">#NyquistLimit</span>
+<span class="hub-tag">#Windowing</span>
+</div>
+</div>
+<div class="hub-card-footer">
+<a href="./lectures/02-fourier-transform-fft/index.html" class="hub-card-link">Open interactive tutorial ↗</a>
+<div class="hub-card-downloads">
+<a href="./lectures/02-fourier-transform-fft/slides.pdf" download title="Download Slides PDF">PDF</a> · 
+<a href="./lectures/02-fourier-transform-fft/notebook.ipynb" download title="Download Notebook">.ipynb</a>
+</div>
+</div>
+</article>
+
+<!-- Card 03 -->
+<article class="hub-card">
+<div class="hub-card-body">
+<div class="hub-card-kicker">Lecture 03 · Structural Dynamics</div>
+<h3 class="hub-card-title">Multi-DOF Systems: Coupled Equations & Modes</h3>
+<p class="hub-card-abstract">Assemble global mass and stiffness matrices M and K for discrete mechanical networks. Decouple equations via generalized eigenvalue problems and modal superposition.</p>
+<div class="hub-card-tags">
+<span class="hub-tag">#MultiDOF</span>
+<span class="hub-tag">#CoupledSystems</span>
+<span class="hub-tag">#NormalModes</span>
+<span class="hub-tag">#Superposition</span>
+</div>
+</div>
+<div class="hub-card-footer">
+<a href="./lectures/03-multi-dof-systems/index.html" class="hub-card-link">Open interactive tutorial ↗</a>
+<div class="hub-card-downloads">
+<a href="./lectures/03-multi-dof-systems/slides.pdf" download title="Download Slides PDF">PDF</a> · 
+<a href="./lectures/03-multi-dof-systems/notebook.ipynb" download title="Download Notebook">.ipynb</a>
+</div>
+</div>
+</article>
+
+<!-- Card 04 -->
+<article class="hub-card">
+<div class="hub-card-body">
+<div class="hub-card-kicker">Lecture 04 · Data-Driven Mechanics</div>
+<h3 class="hub-card-title">Eigen-Decomposition & DMD: System Identification</h3>
+<p class="hub-card-abstract">Transform second-order mechanics into continuous first-order state space. Discover spatiotemporal dynamic modes directly from measurement snapshots with DMD.</p>
+<div class="hub-card-tags">
+<span class="hub-tag">#Eigenvalues</span>
+<span class="hub-tag">#StateSpace</span>
+<span class="hub-tag">#DMD</span>
+<span class="hub-tag">#Identification</span>
+</div>
+</div>
+<div class="hub-card-footer">
+<a href="./lectures/04-eigen-decomposition/index.html" class="hub-card-link">Open interactive tutorial ↗</a>
+<div class="hub-card-downloads">
+<a href="./lectures/04-eigen-decomposition/slides.pdf" download title="Download Slides PDF">PDF</a> · 
+<a href="./lectures/04-eigen-decomposition/notebook.ipynb" download title="Download Notebook">.ipynb</a>
+</div>
+</div>
+</article>
+
+<!-- Card 05 -->
+<article class="hub-card">
+<div class="hub-card-body">
+<div class="hub-card-kicker">Lecture 05 · Geometric Mechanics</div>
+<h3 class="hub-card-title">Nonlinear ODEs in Mechanics: Phase Space & Pendulum</h3>
+<p class="hub-card-abstract">Formulate nonlinear conservative dynamics beyond small angles. Construct the exact phase portrait, homoclinic separatrix orbit, and elliptic period elongation.</p>
+<div class="hub-card-tags">
+<span class="hub-tag">#NonlinearODEs</span>
+<span class="hub-tag">#PhaseSpace</span>
+<span class="hub-tag">#EnergyConservation</span>
+<span class="hub-tag">#Separatrix</span>
+</div>
+</div>
+<div class="hub-card-footer">
+<a href="./lectures/05-nonlinear-odes/index.html" class="hub-card-link">Open interactive tutorial ↗</a>
+<div class="hub-card-downloads">
+<a href="./lectures/05-nonlinear-odes/slides.pdf" download title="Download Slides PDF">PDF</a> · 
+<a href="./lectures/05-nonlinear-odes/notebook.ipynb" download title="Download Notebook">.ipynb</a>
+</div>
+</div>
+</article>
+
+<!-- Card 06 -->
+<article class="hub-card">
+<div class="hub-card-body">
+<div class="hub-card-kicker">Lecture 06 · Stability Theory</div>
+<h3 class="hub-card-title">Phase Portraits & Stability Analysis: Limit Cycles</h3>
+<p class="hub-card-abstract">Locate equilibrium points and classify stability via the trace-determinant plane of the Jacobian matrix. Map invariant manifolds and Van der Pol limit cycles.</p>
+<div class="hub-card-tags">
+<span class="hub-tag">#PhasePortraits</span>
+<span class="hub-tag">#Stability</span>
+<span class="hub-tag">#Jacobian</span>
+<span class="hub-tag">#LimitCycles</span>
+</div>
+</div>
+<div class="hub-card-footer">
+<a href="./lectures/06-phase-portraits-stability/index.html" class="hub-card-link">Open interactive tutorial ↗</a>
+<div class="hub-card-downloads">
+<a href="./lectures/06-phase-portraits-stability/slides.pdf" download title="Download Slides PDF">PDF</a> · 
+<a href="./lectures/06-phase-portraits-stability/notebook.ipynb" download title="Download Notebook">.ipynb</a>
+</div>
+</div>
+</article>
+
+<!-- Card 07 -->
+<article class="hub-card">
+<div class="hub-card-body">
+<div class="hub-card-kicker">Lecture 07 · Computational Mechanics</div>
+<h3 class="hub-card-title">Numerical Solution of ODEs: Runge-Kutta & Stiffness</h3>
+<p class="hub-card-abstract">Explicit and implicit Runge-Kutta integrators. Derive the Butcher tableau, map Dahlquist complex stability boundaries, and diagnose numerical stiffness.</p>
+<div class="hub-card-tags">
+<span class="hub-tag">#RungeKutta</span>
+<span class="hub-tag">#DahlquistStability</span>
+<span class="hub-tag">#Stiffness</span>
+<span class="hub-tag">#AdaptiveStep</span>
+</div>
+</div>
+<div class="hub-card-footer">
+<a href="./lectures/07-numerical-odes/index.html" class="hub-card-link">Open interactive tutorial ↗</a>
+<div class="hub-card-downloads">
+<a href="./lectures/07-numerical-odes/slides.pdf" download title="Download Slides PDF">PDF</a> · 
+<a href="./lectures/07-numerical-odes/notebook.ipynb" download title="Download Notebook">.ipynb</a>
+</div>
+</div>
+</article>
+
+</div>
+</main>
+
+<footer class="footer-band">
+<div class="footer-inner">
+<div class="footer-info">
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering & Scientific Computing</div>
+<div>Pure Quarto Website · Hosted on GitHub Pages</div>
+</div>
+<div class="footer-links">
+<div><strong>Quick Navigation</strong></div>
+<div><a href="./index.html">All Tutorials Hub</a></div>
+</div>
+</div>
+</footer>
+```

@@ -1,0 +1,16 @@
+number: 2
+title: "Fourier Transform and FFT: From Time Series to Linear Spectrum"
+slug: "02-fourier-transform-fft"
+date: "2026-09-10"
+tags:
+  - "FFT"
+  - "Spectral Analysis"
+  - "Nyquist Frequency"
+  - "Windowing"
+takeaways:
+  - "Understand mathematical foundation of the Discrete Fourier Transform and O(N log N) FFT."
+  - "Master sampling criteria: Nyquist-Shannon sampling theorem and aliasing prevention."
+  - "Apply window functions (Hanning, Hamming) to mitigate spectral leakage."
+tasks:
+  - "Synthesize a multi-tone vibration signal with additive noise and extract peaks via FFT."
+  - "Investigate zero-padding vs increased recording time on frequency resolution."

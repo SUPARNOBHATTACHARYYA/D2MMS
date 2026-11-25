@@ -1,0 +1,16 @@
+number: 6
+title: "Phase Portraits & Stability Analysis: Invariant Manifolds & Limit Cycles"
+slug: "06-phase-portraits-stability"
+date: "2026-09-24"
+tags:
+  - "Phase Portraits"
+  - "Stability"
+  - "Jacobian Linearization"
+  - "Limit Cycles"
+takeaways:
+  - "Locate equilibrium points and classify stability via trace-determinant plane of Jacobian."
+  - "Identify stable and unstable invariant manifolds separating dynamic attraction basins."
+  - "Explore self-excited nonlinear oscillations and isolated periodic orbits (limit cycles)."
+tasks:
+  - "Compute vector fields and nullclines for the Van der Pol nonlinear oscillator."
+  - "Simulate relaxation oscillations and phase portrait convergence toward the limit cycle."

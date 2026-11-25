@@ -1,0 +1,11 @@
+<script>
+(function() {
+  var isSub = window.location.pathname.indexOf('/lectures/') !== -1;
+  var prefix = isSub ? '../../' : './';
+  var v = '?v=' + Date.now();
+  document.write('<script src="' + prefix + 'assets/vendor/katex/katex.min.js' + v + '"><\/script>');
+  document.write('<script src="' + prefix + 'assets/vendor/katex/auto-render.min.js' + v + '"><\/script>');
+  document.write('<script src="' + prefix + 'assets/js/common.js' + v + '"><\/script>');
+  document.write('<script src="' + prefix + 'assets/js/simulations.js' + v + '"><\/script>');
+})();
+</script>

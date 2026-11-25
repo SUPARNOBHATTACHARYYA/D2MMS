@@ -1,0 +1,216 @@
+---
+pagetitle: "Lecture 07: Numerical Solution of ODEs"
+page-layout: custom
+---
+
+```{=html}
+<!-- Sticky Topbar Navigation -->
+<header class="topbar">
+<div class="topbar-inner">
+<a href="../../index.html" class="brand">
+<div class="brand-mark">07</div>
+<div class="brand-meta">
+<div class="brand-title">Lec 07: Numerical ODEs</div>
+<div class="brand-sub">NMED 5XX · All Tutorials</div>
+</div>
+</a>
+<nav class="chapter-nav">
+<a href="#sec-outcomes" class="active">Outcomes</a>
+<a href="#sec-theory">Runge-Kutta</a>
+<a href="#sec-stability">Dahlquist Stability</a>
+<a href="#sec-misconceptions">Key Insights</a>
+<a href="#sec-quiz">Quiz</a>
+<a href="#sec-code">Code</a>
+<a href="#sec-materials">Materials</a>
+</nav>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light/Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-band" id="top">
+<div class="hero-inner">
+<div class="eyebrow">Lecture 07 · Computational Mechanics & Time Integration</div>
+<div class="copper-bar"></div>
+<h1>Numerical Solution of ODEs: Runge-Kutta, Stiffness & Step Size Control</h1>
+<p class="hero-lead">
+Formulate explicit and implicit time integrators via the <span class="highlight-blue">Butcher tableau</span>. 
+Map complex absolute stability boundaries in the <span class="highlight-orange">Dahlquist plane $z = \lambda h$</span>, 
+diagnose numerical stiffness, and implement <span class="highlight-teal">adaptive step-size control</span>.
+</p>
+</div>
+</section>
+
+<main class="page-wrap">
+
+<!-- Section 1: Outcomes -->
+<section class="lesson-section" id="sec-outcomes">
+<div class="callout-tip">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+Learning Outcomes
+</div>
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Derive</strong> the Butcher tableau order conditions for explicit and implicit Runge-Kutta schemes.</li>
+<li><strong>Evaluate</strong> the Dahlquist test equation $y' = \lambda y$ and calculate stability polynomials $R(z)$.</li>
+<li><strong>Diagnose</strong> numerical stiffness and identify why explicit solvers suffer catastrophic step-size bottlenecks.</li>
+<li><strong>Implement</strong> A-stable implicit integrators (Radau, BDF) and embedded adaptive step controllers (RK45).</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: Theory -->
+<section class="lesson-section" id="sec-theory">
+<div class="section-header">
+<div class="section-tag">01 · Numerical Formulations</div>
+<h2>7.1 The Classical Runge-Kutta Method (RK4)</h2>
+<p>Approximating initial value problem $y' = f(t, y)$ with step size $h = \Delta t$:</p>
+</div>
+
+<div class="card">
+<div class="eq-box">
+$$y_{n+1} = y_n + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)$$
+</div>
+
+<p>Where the four intermediate stage slopes are evaluated sequentially:</p>
+
+<div class="eq-box">
+$$\begin{aligned}
+k_1 &= f(t_n, y_n) \\
+k_2 &= f(t_n + \tfrac{h}{2}, y_n + \tfrac{h}{2}k_1) \\
+k_3 &= f(t_n + \tfrac{h}{2}, y_n + \tfrac{h}{2}k_2) \\
+k_4 &= f(t_n + h, y_n + h k_3)
+\end{aligned}$$
+</div>
+</div>
+</section>
+
+<!-- Section 3: Stability -->
+<section class="lesson-section" id="sec-stability">
+<div class="section-header">
+<div class="section-tag">02 · Numerical Stability</div>
+<h2>7.2 Dahlquist Test Equation & Absolute Stability</h2>
+<p>Applying numerical integrators to linear scalar test problem $y' = \lambda y$ where $z = \lambda h \in \mathbb{C}$:</p>
+</div>
+
+<div class="card">
+<div class="callout">
+<strong>• Forward Euler ($y_{n+1} = (1 + z) y_n$):</strong> Stable only inside the unit disc $|1 + z| \le 1$. Requires tiny step size $h < 2/|\lambda_{\max}|$.<br>
+<strong>• Classical RK4 ($y_{n+1} = (1 + z + \frac{z^2}{2} + \frac{z^3}{6} + \frac{z^4}{24}) y_n$):</strong> Enlarged stability region on negative real axis spanning $-2.78 \le \operatorname{Re}(z) \le 0$.<br>
+<strong>• Backward Euler ($y_{n+1} = (1 - z)^{-1} y_n$):</strong> $A$-stable! Stable across the entire left complex half-plane $\operatorname{Re}(z) \le 0$, allowing unconditional stability regardless of system stiffness.
+</div>
+</div>
+</section>
+
+<!-- Section 4: Misconceptions -->
+<section class="lesson-section" id="sec-misconceptions">
+<div class="callout-important">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+Common Misconception · Is a Stiff System Just a Fast-Oscillating System?
+</div>
+<p style="margin: 0 0 8px 0;">
+No. Stiffness is not merely about rapid dynamics; it is about <strong>disparity of timescales</strong> where fast transient modes decay quickly, leaving slow dynamics of physical interest.
+</p>
+<p style="margin: 0;">
+In stiff mechanics, explicit integrators are forced to take microscopic time steps (e.g. $\Delta t < 10^{-6}\text{ s}$) solely to keep the already-decayed fast mode from exploding numerically, even when the actual solution is changing smoothly! Switching to an $A$-stable implicit solver (such as Radau or BDF) removes this stability barrier entirely.
+</p>
+</div>
+</section>
+
+<!-- Section 5: Quiz -->
+<section class="lesson-section" id="sec-quiz">
+<div class="section-header">
+<div class="section-tag">03 · Diagnostic Checkpoint</div>
+<h2>7.3 Check Your Understanding</h2>
+<p>Test your understanding of numerical stiffness and step size constraints.</p>
+</div>
+
+<div class="quiz-box">
+<div class="quiz-question">
+<strong>Question:</strong> A mechanical ODE has eigenvalues $\lambda_1 = -1\text{ s}^{-1}$ and $\lambda_2 = -5000\text{ s}^{-1}$. If using Forward Euler, what is the maximum time step $h$ before the numerical simulation explodes?
+</div>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false" data-explanation="h = 2.0 s would explode immediately! Stability is governed strictly by the fastest (most negative) eigenvalue lambda2!">
+A. $h < 2.0\text{ s}$ based on $\lambda_1$.
+</div>
+<div class="quiz-opt" data-correct="true" data-explanation="Forward Euler stability boundary requires |1 + lambda * h| <= 1, which for real negative lambda means -2 <= lambda * h <= 0, or h < 2 / |lambda_max| = 2 / 5000 = 0.0004 seconds! Even though lambda2 decays in 1 millisecond, explicit Euler must take tiny steps forever.">
+B. $h < 0.0004\text{ s}$ ($0.4\text{ milliseconds}$) dictated by the stiff eigenvalue $\lambda_2 = -5000\text{ s}^{-1}$.
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Euler is conditionally stable, not unconditionally stable.">
+C. Any time step is permitted as long as energy is conserved.
+</div>
+</div>
+<div class="quiz-feedback"></div>
+</div>
+</section>
+
+<!-- Section 6: Code -->
+<section class="lesson-section" id="sec-code">
+<div class="section-header">
+<div class="section-tag">04 · Computational Implementation</div>
+<h2>7.4 Stiff ODE Integration Benchmark</h2>
+<p>Compare explicit RK45 against implicit Radau on a stiff mechanical system.</p>
+</div>
+
+<div class="code-box">
+<div class="code-header">
+<div class="code-tabs">
+<button class="code-tab-btn active">Python (SciPy RK45 vs Radau)</button>
+</div>
+<button class="btn-copy">Copy Code</button>
+</div>
+<pre class="code-block"><code>import numpy as np
+from scipy.integrate import solve_ivp
+
+# Stiff spring-damper system: lambda1 = -1, lambda2 = -2000
+def stiff_odes(t, y):
+    return [-y[0], -2000.0 * (y[1] - np.sin(t))]
+
+t_span = [0, 5.0]
+y0 = [1.0, 0.0]
+
+# Explicit RK45 (encounters step-size bottleneck)
+sol_rk45 = solve_ivp(stiff_odes, t_span, y0, method='RK45')
+print(f"Explicit RK45 step count: {sol_rk45.nfev} function evaluations")
+
+# Implicit Radau (A-stable, takes large smooth steps)
+sol_radau = solve_ivp(stiff_odes, t_span, y0, method='Radau')
+print(f"Implicit Radau step count: {sol_radau.nfev} evaluations (Orders of magnitude faster!)")</code></pre>
+</div>
+</section>
+
+<!-- Section 7: Materials -->
+<section class="lesson-section" id="sec-materials">
+<div class="section-header">
+<div class="section-tag">05 · Lecture Resources</div>
+<h2>7.5 Materials & Notebooks</h2>
+<p>Download the official presentation slides and supporting interactive Jupyter notebook for Lecture 07.</p>
+</div>
+
+<div class="download-bar">
+<a href="slides.pdf" download class="btn-download-primary">Download Slides (PDF)</a>
+<a href="notebook.ipynb" download class="btn-download-secondary">Download Jupyter Notebook (.ipynb)</a>
+</div>
+</section>
+
+</main>
+
+<!-- Footer Navigation -->
+<footer class="footer-band">
+<div class="footer-inner">
+<div>
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering · Fall Term 2026</div>
+</div>
+<div>
+<a href="../06-phase-portraits-stability/index.html">← Prev: Lec 06 Stability</a> · 
+<a href="../../index.html">All Tutorials Hub</a>
+</div>
+</div>
+</footer>
+```

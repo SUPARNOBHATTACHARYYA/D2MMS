@@ -1,0 +1,240 @@
+---
+pagetitle: "Lecture 03: Multi-DOF Systems"
+page-layout: custom
+---
+
+```{=html}
+<!-- Sticky Topbar Navigation -->
+<header class="topbar">
+<div class="topbar-inner">
+<a href="../../index.html" class="brand">
+<div class="brand-mark">03</div>
+<div class="brand-meta">
+<div class="brand-title">Lec 03: Multi-DOF Systems</div>
+<div class="brand-sub">NMED 5XX · All Tutorials</div>
+</div>
+</a>
+<nav class="chapter-nav">
+<a href="#sec-outcomes" class="active">Outcomes</a>
+<a href="#sec-theory">Theory</a>
+<a href="#sec-orthogonality">Orthogonality</a>
+<a href="#sec-misconceptions">Key Insights</a>
+<a href="#sec-quiz">Quiz</a>
+<a href="#sec-code">Code</a>
+<a href="#sec-materials">Materials</a>
+</nav>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light/Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-band" id="top">
+<div class="hero-inner">
+<div class="eyebrow">Lecture 03 · Structural Dynamics & Coupled Mechanics</div>
+<div class="copper-bar"></div>
+<h1>Multi-DOF Systems: Coupled Equations & Modal Superposition</h1>
+<p class="hero-lead">
+Assemble global mass $\mathbf{M}$ and stiffness $\mathbf{K}$ matrices for 
+<span class="highlight-blue">discrete mechanical networks</span>. Formulate the 
+<span class="highlight-orange">generalized algebraic eigenvalue problem</span>, establish modal orthogonality, 
+and uncouple complex coupled differential equations into independent <span class="highlight-teal">normal coordinates</span>.
+</p>
+</div>
+</section>
+
+<main class="page-wrap">
+
+<!-- Section 1: Learning Outcomes -->
+<section class="lesson-section" id="sec-outcomes">
+<div class="callout-tip">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+Learning Outcomes
+</div>
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Assemble</strong> symmetric positive-definite mass and stiffness matrices for multi-storey and multi-body structures.</li>
+<li><strong>Solve</strong> the characteristic determinant $\det(\mathbf{K} - \omega^2 \mathbf{M}) = 0$ for natural frequencies and mode shape vectors.</li>
+<li><strong>Prove & leverage</strong> mass-orthogonality $\mathbf{\Phi}^T \mathbf{M} \mathbf{\Phi} = \mathbf{I}$ to decouple large coupled systems.</li>
+<li><strong>Compute</strong> transient forced responses via modal superposition without inverting coupled differential operators.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: Theory -->
+<section class="lesson-section" id="sec-theory">
+<div class="section-header">
+<div class="section-tag">01 · Matrix Formulations</div>
+<h2>3.1 Coupled Matrix Equations of Motion</h2>
+<p>For an $n$-degree-of-freedom discrete linear structure undergoing small vibrations, dynamic equilibrium in matrix form is written:</p>
+</div>
+
+<div class="card">
+<div class="eq-box">
+$$\mathbf{M} \ddot{\mathbf{x}}(t) + \mathbf{C} \dot{\mathbf{x}}(t) + \mathbf{K} \mathbf{x}(t) = \mathbf{f}(t)$$
+</div>
+
+<p>
+Where $\mathbf{M} \in \mathbb{R}^{n \times n}$ is the positive-definite mass matrix, $\mathbf{K} \in \mathbb{R}^{n \times n}$ is the stiffness matrix, and $\mathbf{x}(t) = [x_1(t), \dots, x_n(t)]^T$ is the physical coordinate displacement vector.
+</p>
+<p>
+Assuming synchronous harmonic free vibration $\mathbf{x}(t) = \mathbf{u} e^{i \omega t}$ yields the generalized algebraic eigenvalue problem:
+</p>
+
+<div class="eq-box">
+$$(\mathbf{K} - \omega^2 \mathbf{M}) \mathbf{u} = \mathbf{0} \quad \implies \quad \det(\mathbf{K} - \omega^2 \mathbf{M}) = 0$$
+</div>
+
+<p>
+The roots of the characteristic polynomial yield $n$ real natural frequencies $\omega_1 \le \omega_2 \le \dots \le \omega_n$ and $n$ orthogonal mode shape eigenvectors $\mathbf{u}_1, \dots, \mathbf{u}_n$.
+</p>
+</div>
+</section>
+
+<!-- Section 3: Modal Decoupling -->
+<section class="lesson-section" id="sec-orthogonality">
+<div class="section-header">
+<div class="section-tag">02 · Modal Analysis</div>
+<h2>3.2 Modal Coordinates & Decoupling</h2>
+<p>Transforming from physical coordinates $\mathbf{x}$ to modal coordinates $\mathbf{q}$ via modal matrix $\mathbf{\Phi} = [\mathbf{u}_1, \dots, \mathbf{u}_n]$.</p>
+</div>
+
+<div class="card">
+<p>Substituting $\mathbf{x}(t) = \mathbf{\Phi} \mathbf{q}(t)$ and premultiplying by $\mathbf{\Phi}^T$:</p>
+
+<div class="eq-box">
+$$\mathbf{\Phi}^T \mathbf{M} \mathbf{\Phi} \ddot{\mathbf{q}} + \mathbf{\Phi}^T \mathbf{K} \mathbf{\Phi} \mathbf{q} = \mathbf{\Phi}^T \mathbf{f}(t)$$
+</div>
+
+<p>By virtue of mass-normalization ($\mathbf{\Phi}^T \mathbf{M} \mathbf{\Phi} = \mathbf{I}$ and $\mathbf{\Phi}^T \mathbf{K} \mathbf{\Phi} = \operatorname{diag}(\omega_1^2, \dots, \omega_n^2)$), the coupled system separates into $n$ completely independent 1-DOF single-degree modal oscillators:</p>
+
+<div class="eq-box">
+$$\ddot{q}_r(t) + \omega_r^2 q_r(t) = Q_r(t) \equiv \mathbf{u}_r^T \mathbf{f}(t), \quad r = 1, \dots, n$$
+</div>
+</div>
+</section>
+
+<!-- Section 4: Misconceptions -->
+<section class="lesson-section" id="sec-misconceptions">
+<div class="callout-important">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+Common Misconception · Do Mode Shapes Represent Absolute Amplitudes?
+</div>
+<p style="margin: 0 0 8px 0;">
+Students often confuse mode shape eigenvectors $\mathbf{u}_r$ with actual physical displacement magnitudes.
+</p>
+<p style="margin: 0;">
+<strong>Mode shapes indicate relative shape ratios only, not absolute displacement units.</strong> An eigenvector can be scaled by any arbitrary constant ($\alpha \mathbf{u}_r$) and still satisfy $(\mathbf{K} - \omega_r^2 \mathbf{M}) \mathbf{u}_r = \mathbf{0}$. Absolute physical displacement is determined only after combining mode shapes with initial conditions and external force amplitudes through modal participation factors!
+</p>
+</div>
+</section>
+
+<!-- Section 5: Quiz -->
+<section class="lesson-section" id="sec-quiz">
+<div class="section-header">
+<div class="section-tag">03 · Diagnostic Checkpoint</div>
+<h2>3.3 Check Your Understanding</h2>
+<p>Test your understanding of multi-DOF dynamics and modal decoupling.</p>
+</div>
+
+<div class="quiz-box">
+<div class="quiz-question">
+<strong>Question:</strong> In an undamped 2-DOF mass-spring system, what occurs if an external harmonic force is applied whose spatial distribution is orthogonal to the second mode shape ($\mathbf{u}_2^T \mathbf{f}_0 = 0$)?
+</div>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false" data-explanation="Modal decoupling means modes operate independently. Zero modal force in mode 2 prevents mode 2 from ever receiving energy!">
+A. Both modes resonate simultaneously.
+</div>
+<div class="quiz-opt" data-correct="true" data-explanation="Since the modal force Q2 = u2^T * f = 0, the second modal coordinate q2(t) receives zero excitation. The structure responds exclusively in mode 1, even if the excitation frequency is tuned close to omega_2!">
+B. Mode 2 is never excited (its modal response $q_2(t) = 0$), and the structure oscillates purely in Mode 1.
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Orthogonality does not create instability; it completely decouples energy transmission!">
+C. The system becomes unstable due to anti-resonance.
+</div>
+</div>
+<div class="quiz-feedback"></div>
+</div>
+</section>
+
+<!-- Section 6: Code -->
+<section class="lesson-section" id="sec-code">
+<div class="section-header">
+<div class="section-tag">04 · Computational Implementation</div>
+<h2>3.4 Generalized Eigenvalue Solution in Python & MATLAB</h2>
+<p>Solve for natural frequencies and normalized mode shapes of a 3-DOF shear building structure.</p>
+</div>
+
+<div class="code-box">
+<div class="code-header">
+<div class="code-tabs">
+<button class="code-tab-btn active">Python (SciPy eigh)</button>
+<button class="code-tab-btn">MATLAB (eig)</button>
+</div>
+<button class="btn-copy">Copy Code</button>
+</div>
+<pre class="code-block"><code>import numpy as np
+from scipy.linalg import eigh
+
+# 3-DOF Mass & Stiffness Matrices
+M = np.diag([20.0, 15.0, 10.0]) # Mass matrix (kg)
+k1, k2, k3 = 10000.0, 8000.0, 5000.0
+K = np.array([
+    [k1 + k2,   -k2,         0.0],
+    [-k2,       k2 + k3,     -k3],
+    [0.0,       -k3,         k3 ]
+])
+
+# Solve Generalized Eigenvalue Problem: K * v = w^2 * M * v
+eigenvalues, Phi = eigh(K, M)
+natural_freqs_hz = np.sqrt(eigenvalues) / (2 * np.pi)
+
+print("Natural Frequencies (Hz):", np.round(natural_freqs_hz, 2))
+print("Mass-Normalized Mode Shapes Matrix Phi:\n", np.round(Phi, 3))</code></pre>
+<pre class="code-block" hidden><code>% MATLAB Generalized Eigenvalue Solution
+M = diag([20, 15, 10]);
+K = [18000 -8000 0; -8000 13000 -5000; 0 -5000 5000];
+
+[Phi, D] = eig(K, M);
+omega = sqrt(diag(D));
+freq_hz = omega / (2*pi);
+
+disp('Frequencies (Hz):'); disp(freq_hz);
+disp('Mode Shapes:'); disp(Phi);</code></pre>
+</div>
+</section>
+
+<!-- Section 7: Materials -->
+<section class="lesson-section" id="sec-materials">
+<div class="section-header">
+<div class="section-tag">05 · Lecture Resources</div>
+<h2>3.5 Materials & Notebooks</h2>
+<p>Download the official presentation slides and supporting interactive Jupyter notebook for Lecture 03.</p>
+</div>
+
+<div class="download-bar">
+<a href="slides.pdf" download class="btn-download-primary">Download Slides (PDF)</a>
+<a href="notebook.ipynb" download class="btn-download-secondary">Download Jupyter Notebook (.ipynb)</a>
+</div>
+</section>
+
+</main>
+
+<!-- Footer Navigation -->
+<footer class="footer-band">
+<div class="footer-inner">
+<div>
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering · Fall Term 2026</div>
+</div>
+<div>
+<a href="../02-fourier-transform-fft/index.html">← Prev: Lec 02 Fourier Transform</a> · 
+<a href="../../index.html">All Tutorials Hub</a> · 
+<a href="../04-eigen-decomposition/index.html">Next: Lec 04 Eigen & DMD →</a>
+</div>
+</div>
+</footer>
+```

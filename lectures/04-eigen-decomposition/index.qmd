@@ -1,0 +1,231 @@
+---
+pagetitle: "Lecture 04: Eigen-Decomposition & DMD"
+page-layout: custom
+---
+
+```{=html}
+<!-- Sticky Topbar Navigation -->
+<header class="topbar">
+<div class="topbar-inner">
+<a href="../../index.html" class="brand">
+<div class="brand-mark">04</div>
+<div class="brand-meta">
+<div class="brand-title">Lec 04: Eigen-Decomposition & DMD</div>
+<div class="brand-sub">NMED 5XX · All Tutorials</div>
+</div>
+</a>
+<nav class="chapter-nav">
+<a href="#sec-outcomes" class="active">Outcomes</a>
+<a href="#sec-theory">State-Space</a>
+<a href="#sec-dmd">DMD Algorithm</a>
+<a href="#sec-misconceptions">Key Insights</a>
+<a href="#sec-quiz">Quiz</a>
+<a href="#sec-code">Code</a>
+<a href="#sec-materials">Materials</a>
+</nav>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light/Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-band" id="top">
+<div class="hero-inner">
+<div class="eyebrow">Lecture 04 · Data-Driven Dynamics & Modal Identification</div>
+<div class="copper-bar"></div>
+<h1>Eigen-Decomposition & DMD: State-Space & Modal Identification</h1>
+<p class="hero-lead">
+Transform second-order mechanics into continuous first-order <span class="highlight-blue">state-space models</span> $\dot{\mathbf{z}} = \mathbf{A}\mathbf{z}$. 
+Extract coherent spatiotemporal modes directly from experimental sensor measurement snapshots using the 
+<span class="highlight-orange">Dynamic Mode Decomposition (DMD)</span> algorithm.
+</p>
+</div>
+</section>
+
+<main class="page-wrap">
+
+<!-- Section 1: Outcomes -->
+<section class="lesson-section" id="sec-outcomes">
+<div class="callout-tip">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+Learning Outcomes
+</div>
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Convert</strong> second-order mechanical ODEs into continuous $2n$-dimensional state-space matrices.</li>
+<li><strong>Map</strong> complex eigenvalues $\lambda = \sigma \pm i \omega_d$ onto decay rates and damped oscillation frequencies.</li>
+<li><strong>Construct</strong> time-shifted measurement snapshot data matrices $\mathbf{X}$ and $\mathbf{X}'$.</li>
+<li><strong>Implement</strong> SVD-accelerated Dynamic Mode Decomposition to identify modal vectors without knowing mass or stiffness matrices.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: Theory -->
+<section class="lesson-section" id="sec-theory">
+<div class="section-header">
+<div class="section-tag">01 · State-Space Mechanics</div>
+<h2>4.1 Continuous State-Space Representation</h2>
+<p>Defining the state vector $\mathbf{z}(t) = [\mathbf{x}(t)^T, \dot{\mathbf{x}}(t)^T]^T \in \mathbb{R}^{2n}$:</p>
+</div>
+
+<div class="card">
+<div class="eq-box">
+$$\dot{\mathbf{z}}(t) = \begin{bmatrix} \dot{\mathbf{x}} \\ \ddot{\mathbf{x}} \end{bmatrix} = \begin{bmatrix} \mathbf{0} & \mathbf{I} \\ -\mathbf{M}^{-1}\mathbf{K} & -\mathbf{M}^{-1}\mathbf{C} \end{bmatrix} \begin{bmatrix} \mathbf{x} \\ \dot{\mathbf{x}} \end{bmatrix} = \mathbf{A} \mathbf{z}(t)$$
+</div>
+
+<p>
+The complex eigenvalues of $\mathbf{A}$, denoted $\lambda_j = \sigma_j \pm i \omega_{d,j}$, directly determine:
+</p>
+<ul>
+<li><strong>Stability / Decay Rate:</strong> $\sigma_j = \operatorname{Re}(\lambda_j) < 0$ guarantees asymptotic stability.</li>
+<li><strong>Damped Oscillation Frequency:</strong> $\omega_{d,j} = |\operatorname{Im}(\lambda_j)|$.</li>
+<li><strong>Modal Damping Ratio:</strong> $\zeta_j = -\sigma_j / \sqrt{\sigma_j^2 + \omega_{d,j}^2}$.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 3: DMD -->
+<section class="lesson-section" id="sec-dmd">
+<div class="section-header">
+<div class="section-tag">02 · Data-Driven Algorithms</div>
+<h2>4.2 Exact Dynamic Mode Decomposition (DMD)</h2>
+<p>Given sensor measurement snapshots sampled at uniform time step $\Delta t$, assemble two data matrices:</p>
+</div>
+
+<div class="card">
+<div class="eq-box">
+$$\mathbf{X} = [\mathbf{z}_1, \mathbf{z}_2, \dots, \mathbf{z}_{m-1}], \quad \mathbf{X}' = [\mathbf{z}_2, \mathbf{z}_3, \dots, \mathbf{z}_m]$$
+</div>
+
+<p>DMD discovers the best-fit linear operator $\mathbf{A}$ advancing snapshots forward in time ($\mathbf{X}' \approx \mathbf{A} \mathbf{X}$) via low-rank Truncated SVD:</p>
+
+<div class="eq-box">
+$$\mathbf{X} \approx \mathbf{U}_r \mathbf{\Sigma}_r \mathbf{V}_r^* \quad \implies \quad \tilde{\mathbf{A}} = \mathbf{U}_r^* \mathbf{X}' \mathbf{V}_r \mathbf{\Sigma}_r^{-1}$$
+</div>
+
+<p>
+Computing eigenvectors $\mathbf{w}_j$ of reduced matrix $\tilde{\mathbf{A}}$ yields exact full-state dynamic modes:
+</p>
+
+<div class="eq-box">
+$$\mathbf{\Phi}_j = \mathbf{X}' \mathbf{V}_r \mathbf{\Sigma}_r^{-1} \mathbf{w}_j, \quad \lambda_j = \frac{\ln(\mu_j)}{\Delta t}$$
+</div>
+</div>
+</section>
+
+<!-- Section 4: Misconceptions -->
+<section class="lesson-section" id="sec-misconceptions">
+<div class="callout-important">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+Common Misconception · Is DMD Merely Proper Orthogonal Decomposition (POD / PCA)?
+</div>
+<p style="margin: 0 0 8px 0;">
+No. POD / PCA decomposes measurement fields into orthogonal spatial modes based purely on variance, but mixes multiple temporal frequencies together.
+</p>
+<p style="margin: 0;">
+<strong>DMD modes oscillate at a single, distinct complex frequency and exponential decay rate.</strong> DMD combines spatial dimensionality reduction with discrete Fourier time-stepping, allowing engineers to isolate which physical structure vibrates at a specific frequency $\omega_j$.
+</p>
+</div>
+</section>
+
+<!-- Section 5: Quiz -->
+<section class="lesson-section" id="sec-quiz">
+<div class="section-header">
+<div class="section-tag">03 · Diagnostic Checkpoint</div>
+<h2>4.3 Check Your Understanding</h2>
+<p>Test your understanding of DMD eigenvalue mapping.</p>
+</div>
+
+<div class="quiz-box">
+<div class="quiz-question">
+<strong>Question:</strong> If an exact DMD discrete eigenvalue is computed as $\mu_j = 0.98 \exp(i 0.25)$ with sampling interval $\Delta t = 0.01\text{ s}$, what are the continuous decay rate $\sigma_j$ and oscillation frequency $\omega_j$?
+</div>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="true" data-explanation="Continuous eigenvalue lambda = ln(mu) / dt = [ln(0.98) + i * 0.25] / 0.01 = [-0.0202 + i * 0.25] / 0.01 = -2.02 + 25.0i. Thus sigma = -2.02 1/s (stable decay) and omega = 25.0 rad/s!">
+A. $\sigma_j = -2.02\text{ s}^{-1}$ (exponential decay), $\omega_j = 25.0\text{ rad/s}$.
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Remember continuous lambda = ln(mu)/dt, not mu/dt!">
+B. $\sigma_j = +0.98\text{ s}^{-1}$, $\omega_j = 0.25\text{ rad/s}$.
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Since |mu| = 0.98 < 1, the continuous real part ln(|mu|)/dt must be negative (decaying, stable), not positive!">
+C. $\sigma_j = +2.02\text{ s}^{-1}$ (explosive instability), $\omega_j = 250.0\text{ rad/s}$.
+</div>
+</div>
+<div class="quiz-feedback"></div>
+</div>
+</section>
+
+<!-- Section 6: Code -->
+<section class="lesson-section" id="sec-code">
+<div class="section-header">
+<div class="section-tag">04 · Computational Implementation</div>
+<h2>4.4 SVD-Based DMD in Python</h2>
+<p>Extract dynamic modes and eigenvalues from measured snapshot matrices.</p>
+</div>
+
+<div class="code-box">
+<div class="code-header">
+<div class="code-tabs">
+<button class="code-tab-btn active">Python (NumPy / SVD)</button>
+</div>
+<button class="btn-copy">Copy Code</button>
+</div>
+<pre class="code-block"><code>import numpy as np
+
+def compute_exact_dmd(X, X_prime, rank=4, dt=0.01):
+    # Step 1: Truncated SVD of X
+    U, s, Vh = np.linalg.svd(X, full_matrices=False)
+    Ur = U[:, :rank]
+    Sr = np.diag(s[:rank])
+    Vr = Vh[:rank, :].conj().T
+
+    # Step 2: Low-rank projection of linear operator A
+    Atilde = Ur.conj().T @ X_prime @ Vr @ np.linalg.inv(Sr)
+
+    # Step 3: Spectral decomposition of Atilde
+    eigenvalues, W = np.linalg.eig(Atilde)
+
+    # Step 4: Full DMD Modes Phi
+    Phi = X_prime @ Vr @ np.linalg.inv(Sr) @ W
+
+    # Continuous time eigenvalues
+    omega_continuous = np.log(eigenvalues) / dt
+    return Phi, eigenvalues, omega_continuous</code></pre>
+</div>
+</section>
+
+<!-- Section 7: Materials -->
+<section class="lesson-section" id="sec-materials">
+<div class="section-header">
+<div class="section-tag">05 · Lecture Resources</div>
+<h2>4.5 Materials & Notebooks</h2>
+<p>Download the official presentation slides and supporting interactive Jupyter notebook for Lecture 04.</p>
+</div>
+
+<div class="download-bar">
+<a href="slides.pdf" download class="btn-download-primary">Download Slides (PDF)</a>
+<a href="notebook.ipynb" download class="btn-download-secondary">Download Jupyter Notebook (.ipynb)</a>
+</div>
+</section>
+
+</main>
+
+<!-- Footer Navigation -->
+<footer class="footer-band">
+<div class="footer-inner">
+<div>
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering · Fall Term 2026</div>
+</div>
+<div>
+<a href="../03-multi-dof-systems/index.html">← Prev: Lec 03 Multi-DOF</a> · 
+<a href="../../index.html">All Tutorials Hub</a> · 
+<a href="../05-nonlinear-odes/index.html">Next: Lec 05 Nonlinear ODEs →</a>
+</div>
+</div>
+</footer>
+```

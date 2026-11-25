@@ -1,0 +1,16 @@
+number: 5
+title: "Nonlinear ODEs in Mechanics: Phase Space & The Simple Pendulum"
+slug: "05-nonlinear-odes"
+date: "2026-09-22"
+tags:
+  - "Nonlinear ODEs"
+  - "Phase Space"
+  - "Energy Conservation"
+  - "Elliptic Integrals"
+takeaways:
+  - "Formulate conservative nonlinear mechanics beyond small-angle linear approximations."
+  - "Visualize closed orbits, saddle equilibrium points, and the homoclinic separatrix trajectory."
+  - "Evaluate exact pendulum period via complete elliptic integrals of the first kind K(k)."
+tasks:
+  - "Compare small-angle harmonic period T0 against exact elliptic period T(theta_max)."
+  - "Track total mechanical energy drift along computed numerical trajectories."

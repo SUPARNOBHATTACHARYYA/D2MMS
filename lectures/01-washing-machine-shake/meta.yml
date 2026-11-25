@@ -1,0 +1,18 @@
+number: 1
+title: "Why Does a Washing Machine Shake? (1-DOF Forced Vibration)"
+slug: "01-washing-machine-shake"
+date: "2026-09-08"
+tags:
+  - "Intro to Vibrations"
+  - "Pyodide"
+  - "Dynamical Systems"
+  - "Resonance"
+  - "Rotating Imbalance"
+  - "Vibration Isolation"
+takeaways:
+  - "Model a 1-DOF mass-spring-damper system excited by rotating unbalance."
+  - "Derive and interpret steady-state amplitude magnification factor M(r) and phase angle phi(r)."
+  - "Compute force transmissibility and define isolation frequency thresholds."
+tasks:
+  - "Vary spin frequency across the resonance boundary (r=1) and observe phase shift."
+  - "Compute base reaction forces for different damping ratios zeta."

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>./lectures/07-numerical-odes/index.html</loc>
+    <lastmod>2026-11-25T10:51:25.012Z</lastmod>
+  </url>
+  <url>
+    <loc>./lectures/05-nonlinear-odes/index.html</loc>
+    <lastmod>2026-11-25T10:51:24.866Z</lastmod>
+  </url>
+  <url>
+    <loc>./lectures/03-multi-dof-systems/index.html</loc>
+    <lastmod>2026-11-25T10:51:14.361Z</lastmod>
+  </url>
+  <url>
+    <loc>./lectures/01-washing-machine-shake/index.html</loc>
+    <lastmod>2026-11-25T10:51:14.073Z</lastmod>
+  </url>
+  <url>
+    <loc>./index.html</loc>
+    <lastmod>2026-11-25T10:51:03.499Z</lastmod>
+  </url>
+  <url>
+    <loc>./lectures/02-fourier-transform-fft/index.html</loc>
+    <lastmod>2026-11-25T10:51:14.212Z</lastmod>
+  </url>
+  <url>
+    <loc>./lectures/04-eigen-decomposition/index.html</loc>
+    <lastmod>2026-11-25T10:51:24.701Z</lastmod>
+  </url>
+  <url>
+    <loc>./lectures/06-phase-portraits-stability/index.html</loc>
+    <lastmod>2026-11-25T10:51:14.787Z</lastmod>
+  </url>
+</urlset>

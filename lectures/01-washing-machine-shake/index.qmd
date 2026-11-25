@@ -1,0 +1,334 @@
+---
+pagetitle: "Lecture 01: Why Does a Washing Machine Shake?"
+page-layout: custom
+---
+
+```{=html}
+<!-- Sticky Topbar Navigation -->
+<header class="topbar">
+<div class="topbar-inner">
+<a href="../../index.html" class="brand">
+<div class="brand-mark">01</div>
+<div class="brand-meta">
+<div class="brand-title">Lec 01: Washing Machine Shake</div>
+<div class="brand-sub">NMED 5XX · All Tutorials</div>
+</div>
+</a>
+<nav class="chapter-nav">
+<a href="#sec-outcomes" class="active">Outcomes</a>
+<a href="#sec-theory">Theory</a>
+<a href="#sec-simulation">Live Simulation</a>
+<a href="#sec-misconceptions">Key Insights</a>
+<a href="#sec-quiz">Quiz</a>
+<a href="#sec-code">Code</a>
+<a href="#sec-materials">Materials</a>
+</nav>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light/Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Hero Section with Operational Regime Presets -->
+<section class="hero-band" id="top">
+<div class="hero-inner">
+<div class="eyebrow">Lecture 01 · SDOF Forced Vibrations & Rotating Imbalance</div>
+<div class="copper-bar"></div>
+<h1>Why Does a Washing Machine Shake?</h1>
+<p class="hero-lead">
+Investigate a single degree-of-freedom mass-spring-damper oscillator excited by 
+<span class="highlight-blue">rotating mass unbalance</span>. Observe dramatic 
+<span class="highlight-orange">resonant amplification</span> near $\omega = \omega_n$, 
+the counter-intuitive transition to high-speed <span class="highlight-teal">vibration self-isolation</span>, 
+and the fundamental $180^\circ$ phase lag inversion.
+</p>
+
+<div class="system-bar">
+<span class="system-bar-label" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-on-navy); margin-right: 12px;">Operational Regimes:</span>
+<div class="pill-group" role="tablist">
+<button class="pill-btn" data-preset-r="0.4">Sub-Resonant (Slow Spin, r = 0.40)</button>
+<button class="pill-btn active" data-preset-r="1.0">Resonance (Critical Speed, r = 1.00)</button>
+<button class="pill-btn" data-preset-r="2.2">Spin Cycle (Vibration Isolation, r = 2.20)</button>
+</div>
+</div>
+</div>
+</section>
+
+<main class="page-wrap">
+
+<!-- Section 1: Learning Outcomes (Atomic Layer Processing Style) -->
+<section class="lesson-section" id="sec-outcomes">
+<div class="callout-tip">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+Learning Outcomes
+</div>
+<p style="margin: 0 0 10px 0;">By the conclusion of this tutorial module, you will be able to:</p>
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Formulate</strong> the non-homogeneous equation of motion for rotating eccentric unbalance mass systems.</li>
+<li><strong>Derive & calculate</strong> the dynamic magnification factor $M_d(r)$ and steady-state phase lag $\phi(r)$.</li>
+<li><strong>Explain</strong> why operating far above resonance ($r > \sqrt{2}$) isolates vibration forces transmitted to the foundation.</li>
+<li><strong>Implement</strong> steady-state and transient numerical simulations in Python and MATLAB.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: Rigorous Mathematical Theory -->
+<section class="lesson-section" id="sec-theory">
+<div class="section-header">
+<div class="section-tag">01 · Theoretical Mechanics</div>
+<h2>1.1 Governing Equation of Motion</h2>
+<p>Consider a front-loading washing machine of total assembly mass $M$. Inside the drum, an off-center wet laundry clump of unbalance mass $m_0$ rotates at radius $e$ with angular spin velocity $\omega = 2\pi f$. The suspension system provides equivalent lateral stiffness $k$ and viscous dissipation $c$.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Newtonian Dynamic Balance</div>
+<p>
+The horizontal position of the main housing is $x(t)$, while the absolute horizontal coordinate of the eccentric lump is $x_m(t) = x(t) + e \sin(\omega t)$. Applying Newton's second law:
+</p>
+
+<div class="eq-box">
+$$(M - m_0) \ddot{x}(t) + m_0 \frac{d^2}{dt^2}[x(t) + e \sin(\omega t)] + c \dot{x}(t) + k x(t) = 0$$
+</div>
+
+<p>
+Expanding the second derivative $\frac{d^2}{dt^2}[e \sin(\omega t)] = -e \omega^2 \sin(\omega t)$ and regrouping yields the standard forced vibration ODE:
+</p>
+
+<div class="eq-box">
+$$M \ddot{x}(t) + c \dot{x}(t) + k x(t) = m_0 e \omega^2 \sin(\omega t)$$
+</div>
+
+<p>
+Normalizing by total mass $M$, we define the undamped natural frequency $\omega_n = \sqrt{k/M}$ and viscous damping ratio $\zeta = \frac{c}{2\sqrt{k M}}$:
+</p>
+
+<div class="eq-box">
+$$\ddot{x}(t) + 2\zeta \omega_n \dot{x}(t) + \omega_n^2 x(t) = \left(\frac{m_0 e}{M}\right) \omega^2 \sin(\omega t)$$
+</div>
+
+<div class="callout-note">
+<div class="callout-title">Mathematical Derivation · Steady-State Amplitude & Phase</div>
+<p>
+Assuming steady-state harmonic response of the form $x_p(t) = X \sin(\omega t - \phi)$ and substituting into the ODE yields the exact amplitude and phase relations:
+</p>
+$$X = \left(\frac{m_0 e}{M}\right) \frac{r^2}{\sqrt{(1 - r^2)^2 + (2\zeta r)^2}} = \left(\frac{m_0 e}{M}\right) M_d(r)$$
+$$\phi(r) = \arctan\left(\frac{2\zeta r}{1 - r^2}\right)$$
+<p>Where $r = \omega / \omega_n$ is the non-dimensional frequency ratio. Notice that as $r \to \infty$, $M_d(r) \to 1$. Consequently, $X \to \frac{m_0 e}{M}$, meaning the machine naturally spins about its combined center of mass!</p>
+</div>
+</div>
+</section>
+
+<!-- Section 3: Interactive Simulation (D. Chelidze Style) -->
+<section class="lesson-section" id="sec-simulation">
+<div class="section-header">
+<div class="section-tag">02 · Interactive Computational Lab</div>
+<h2>1.2 Real-Time Physical Simulation & Response Curves</h2>
+<p>Manipulate the non-dimensional frequency ratio $r = \omega/\omega_n$ and damping ratio $\zeta$ to observe real-time displacement, drum rotation, and the operating point location along the frequency response curve.</p>
+</div>
+
+<div class="card">
+<!-- Live Equation Banner -->
+<div class="live-eq-banner" id="live-eq-banner">
+Operating State: $r = \omega/\omega_n = 1.00$ | $M_d(r) = 6.25$ | Transmissibility $T_r = 6.29$ | Phase Lag $\phi = 90.0^\circ$
+</div>
+
+<div class="grid-2">
+<!-- Canvas 1: Physical System -->
+<div>
+<div class="canvas-caption">
+<span>Physical Mechanical System</span>
+<span class="mono">Real-Time Simulation</span>
+</div>
+<div class="canvas-box h-sim">
+<canvas id="canvas-lec01-anim"></canvas>
+</div>
+<div class="scrubber-bar">
+<label for="slider-r">Frequency Ratio $r = \omega/\omega_n$:</label>
+<input type="range" id="slider-r" min="0.2" max="3.2" step="0.05" value="1.0">
+<span class="scrubber-val" id="val-r">1.00</span>
+</div>
+</div>
+
+<!-- Canvas 2: Dynamic Magnification Curve -->
+<div>
+<div class="canvas-caption">
+<span>Dynamic Magnification $M_d(r)$</span>
+<span class="mono">Operating Point Tracker</span>
+</div>
+<div class="canvas-box h-sim">
+<canvas id="canvas-lec01-resp"></canvas>
+</div>
+<div class="scrubber-bar">
+<label for="slider-zeta">Damping Ratio $\zeta$:</label>
+<input type="range" id="slider-zeta" min="0.02" max="0.50" step="0.01" value="0.08">
+<span class="scrubber-val" id="val-zeta">0.08</span>
+</div>
+</div>
+</div>
+
+<!-- 3-Column KPI Strip -->
+<div class="kpi-grid-3">
+<div class="kpi-card kpi-blue">
+<div class="kpi-label">Dynamic Magnification $M_d$</div>
+<div class="kpi-val" id="kpi-md">6.25</div>
+<div class="kpi-sub">Housing amplitude relative to $m_0 e / M$</div>
+</div>
+<div class="kpi-card kpi-orange">
+<div class="kpi-label">Force Transmissibility $T_r$</div>
+<div class="kpi-val" id="kpi-tr">6.29</div>
+<div class="kpi-sub">Force transmitted through floor suspension</div>
+</div>
+<div class="kpi-card kpi-teal">
+<div class="kpi-label">Phase Angle $\phi$</div>
+<div class="kpi-val" id="kpi-phase">90.0°</div>
+<div class="kpi-sub">Phase lag between unbalance & displacement</div>
+</div>
+</div>
+
+<div class="callout" style="margin-top: 16px; margin-bottom: 0;">
+<strong>Physical Takeaway:</strong> Notice that for $r < 1$ (sub-resonant), displacement and unbalance are in-phase ($\phi \to 0^\circ$). At resonance ($r = 1$), the displacement lags by exactly $90^\circ$. For high spin speeds ($r > \sqrt{2}$), the displacement lags by nearly $180^\circ$, causing the heavy housing to shift opposite to the unbalance mass, achieving natural vibration isolation ($T_r < 1$)!
+</div>
+</div>
+</section>
+
+<!-- Section 4: Pedagogical Misconception Callout -->
+<section class="lesson-section" id="sec-misconceptions">
+<div class="callout-important">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+Common Misconception · Adding More Damping Is Always Better?
+</div>
+<p style="margin: 0 0 8px 0;">
+A frequent engineering mistake is assuming that increasing damping $\zeta$ always reduces vibrations.
+</p>
+<p style="margin: 0;">
+While higher damping reduces peak amplitude during the brief pass through resonance ($r = 1$), <strong>it actually increases the force transmitted to the floor at high operating spin speeds ($r > \sqrt{2}$)</strong>! In the isolation zone ($r > \sqrt{2}$), stiff viscous dampers transmit high-frequency shock forces directly into the base structure. Modern washing machine designs use speed-dependent dampers or tuned spring suspensions to balance resonance traversal against high-speed quietness.
+</p>
+</div>
+</section>
+
+<!-- Section 5: Check Your Understanding (Diagnostic Quiz) -->
+<section class="lesson-section" id="sec-quiz">
+<div class="section-header">
+<div class="section-tag">03 · Diagnostic Checkpoint</div>
+<h2>1.3 Check Your Understanding</h2>
+<p>Test your conceptual understanding of forced rotating unbalance vibrations. Click an option to inspect diagnostic feedback.</p>
+</div>
+
+<div class="quiz-box">
+<div class="quiz-question">
+<strong>Question:</strong> Why does a washing machine shake violently when accelerating through 300 RPM, but runs smoothly and quietly once reaching full spin at 1200 RPM?
+</div>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false" data-explanation="At 1200 RPM, the unbalance force F = m0 * e * w^2 is actually 16 times larger than at 300 RPM. Centrifugal force increases with the square of speed!">
+A. The centrifugal unbalance force vanishes at higher rotational velocities.
+</div>
+<div class="quiz-opt" data-correct="true" data-explanation="At 300 RPM, the excitation frequency matches the drum suspension's natural frequency (r = 1), causing resonant magnification. At 1200 RPM (r = 4.0 >> sqrt(2)), the system operates in the vibration isolation regime where Transmissibility Tr << 1, and the drum spins harmlessly around its combined center of mass.">
+B. 300 RPM coincides with suspension resonance (r = 1), while 1200 RPM operates deep in the self-isolation regime (r >> √2) where force transmissibility drops well below 1.
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Viscous dampers are passive and do not stiffen or lock up at high spin speeds.">
+C. The viscous shock absorbers lock up into rigid members at high velocities.
+</div>
+</div>
+<div class="quiz-feedback"></div>
+</div>
+</section>
+
+<!-- Section 6: Reproducible Code Blocks -->
+<section class="lesson-section" id="sec-code">
+<div class="section-header">
+<div class="section-tag">04 · Computational Implementation</div>
+<h2>1.4 Numerical Simulation in Python & MATLAB</h2>
+<p>Execute and reproduce these exact dynamic response curves using the verified algorithms below.</p>
+</div>
+
+<div class="code-box">
+<div class="code-header">
+<div class="code-tabs">
+<button class="code-tab-btn active">Python (NumPy / SciPy)</button>
+<button class="code-tab-btn">MATLAB</button>
+</div>
+<button class="btn-copy">Copy Code</button>
+</div>
+<pre class="code-block"><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Mechanical System Parameters
+M = 50.0      # Total machine mass (kg)
+m0 = 1.5      # Eccentric unbalance mass (kg)
+e = 0.25      # Unbalance radius (m)
+fn = 5.0      # Natural frequency (Hz)
+wn = 2 * np.pi * fn
+zeta = 0.08   # Viscous damping ratio
+
+# Non-dimensional frequency sweep
+r = np.linspace(0.1, 3.5, 600)
+omega = r * wn
+
+# Dynamic Magnification Factor & Force Transmissibility
+denom = np.sqrt((1 - r**2)**2 + (2 * zeta * r)**2)
+Md = (r**2) / denom
+Tr = np.sqrt(1 + (2 * zeta * r)**2) / denom
+phi = np.arctan2(2 * zeta * r, 1 - r**2)
+
+print(f"Resonance peak (r=1): Md = {1 / (2 * zeta):.2f}")
+print(f"High-speed spin cycle limit (r -> inf): Md = 1.00 (X = {m0*e/M*1000:.1f} mm)")</code></pre>
+<pre class="code-block" hidden><code>% MATLAB Implementation
+M = 50.0;     % Total mass (kg)
+m0 = 1.5;     % Eccentric mass (kg)
+e = 0.25;     % Radius (m)
+fn = 5.0;     % Natural frequency (Hz)
+wn = 2*pi*fn;
+zeta = 0.08;  % Damping ratio
+
+r = linspace(0.1, 3.5, 600);
+denom = sqrt((1 - r.^2).^2 + (2*zeta*r).^2);
+Md = (r.^2) ./ denom;
+Tr = sqrt(1 + (2*zeta*r).^2) ./ denom;
+
+figure;
+plot(r, Md, 'LineWidth', 2, 'Color', [0.7, 0.38, 0.16]); grid on;
+xlabel('Frequency Ratio r = \omega/\omega_n'); ylabel('Dynamic Magnification M_d');
+title('1-DOF Rotating Unbalance Frequency Response');</code></pre>
+</div>
+</section>
+
+<!-- Section 7: Course Materials Downloads -->
+<section class="lesson-section" id="sec-materials">
+<div class="section-header">
+<div class="section-tag">05 · Lecture Resources</div>
+<h2>1.5 Materials & Notebooks</h2>
+<p>Download the official presentation slides and supporting interactive Jupyter notebook for Lecture 01.</p>
+</div>
+
+<div class="download-bar">
+<a href="slides.pdf" download class="btn-download-primary">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+Download Slides (PDF)
+</a>
+<a href="notebook.ipynb" download class="btn-download-secondary">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+Download Jupyter Notebook (.ipynb)
+</a>
+</div>
+</section>
+
+</main>
+
+<!-- Footer Navigation -->
+<footer class="footer-band">
+<div class="footer-inner">
+<div>
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering · Fall Term 2026</div>
+</div>
+<div>
+<a href="../../index.html">← All Tutorials</a> · 
+<a href="../02-fourier-transform-fft/index.html">Next: Lec 02 Fourier Transform & FFT →</a>
+</div>
+</div>
+</footer>
+```

@@ -1,0 +1,292 @@
+---
+pagetitle: "Lecture 02: Fourier Transform and FFT"
+page-layout: custom
+---
+
+```{=html}
+<!-- Sticky Topbar Navigation -->
+<header class="topbar">
+<div class="topbar-inner">
+<a href="../../index.html" class="brand">
+<div class="brand-mark">02</div>
+<div class="brand-meta">
+<div class="brand-title">Lec 02: Fourier Transform & FFT</div>
+<div class="brand-sub">NMED 5XX · All Tutorials</div>
+</div>
+</a>
+<nav class="chapter-nav">
+<a href="#sec-outcomes" class="active">Outcomes</a>
+<a href="#sec-theory">Theory</a>
+<a href="#sec-simulation">Live Synthesizer</a>
+<a href="#sec-misconceptions">Key Insights</a>
+<a href="#sec-quiz">Quiz</a>
+<a href="#sec-code">Code</a>
+<a href="#sec-materials">Materials</a>
+</nav>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light/Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-band" id="top">
+<div class="hero-inner">
+<div class="eyebrow">Lecture 02 · Signal Processing & Frequency Domain</div>
+<div class="copper-bar"></div>
+<h1>Fourier Transform and FFT: Time Series to Linear Spectrum</h1>
+<p class="hero-lead">
+Transition from continuous <span class="highlight-blue">time-domain signals</span> to discrete 
+<span class="highlight-orange">linear frequency spectra</span>. Master the Discrete Fourier Transform (DFT), 
+the $\mathcal{O}(N \log N)$ Cooley-Tukey algorithm, the 
+<span class="highlight-teal">Nyquist-Shannon sampling theorem</span>, and windowing functions to prevent spectral leakage.
+</p>
+
+<div class="system-bar">
+<span class="system-bar-label" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-on-navy); margin-right: 12px;">Waveform Generator:</span>
+<div class="pill-group" role="tablist">
+<button class="pill-btn active" data-wave="square">Square Wave (Odd Harmonics)</button>
+<button class="pill-btn" data-wave="sawtooth">Sawtooth Wave (All Harmonics)</button>
+<button class="pill-btn" data-wave="multitone">Multi-Tone Machinery Vibration</button>
+</div>
+</div>
+</div>
+</section>
+
+<main class="page-wrap">
+
+<!-- Section 1: Learning Outcomes -->
+<section class="lesson-section" id="sec-outcomes">
+<div class="callout-tip">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+Learning Outcomes
+</div>
+<p style="margin: 0 0 10px 0;">By the conclusion of this tutorial module, you will be able to:</p>
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Distinguish</strong> between continuous Fourier integrals, Fourier series, and Discrete Fourier Transforms (DFT).</li>
+<li><strong>Calculate</strong> the Nyquist frequency $f_{\text{Nyq}} = f_s/2$ and evaluate aliasing risks in mechanical telemetry.</li>
+<li><strong>Explain</strong> the computational revolution of the Cooley-Tukey radix-2 FFT algorithm from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \log_2 N)$.</li>
+<li><strong>Select & apply</strong> appropriate window functions (Hann, Hamming, Flat-Top) to suppress spectral leakage.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: Theory -->
+<section class="lesson-section" id="sec-theory">
+<div class="section-header">
+<div class="section-tag">01 · Signal Theory</div>
+<h2>2.1 Mathematical Foundations of Discrete Fourier Analysis</h2>
+<p>In mechanical condition monitoring, continuous sensor voltages $x(t)$ (from accelerometers or strain gauges) are sampled discretely at uniform sampling rate $f_s = 1/\Delta t$.</p>
+</div>
+
+<div class="card">
+<div class="card-title">Continuous vs. Discrete Transforms</div>
+<p>
+The continuous Fourier transform maps a continuous signal $x(t)$ into continuous complex frequency spectra:
+</p>
+
+<div class="eq-box">
+$$X(f) = \int_{-\infty}^{\infty} x(t) e^{-i 2\pi f t} \, dt, \quad x(t) = \int_{-\infty}^{\infty} X(f) e^{i 2\pi f t} \, df$$
+</div>
+
+<p>
+For digital signal acquisition with $N$ discrete measurements sampled at interval $\Delta t$:
+</p>
+
+<div class="eq-box">
+$$X[k] = \sum_{n=0}^{N-1} x[n] \exp\left(-i \frac{2\pi k n}{N}\right), \quad k = 0, 1, \dots, N-1$$
+</div>
+
+<div class="callout-note">
+<div class="callout-title">Nyquist-Shannon Sampling Criterion & Aliasing</div>
+<p>
+The continuous signal frequency spectrum is unambiguously captured only up to the Nyquist folding frequency:
+</p>
+$$f_{\text{Nyq}} = \frac{f_s}{2} = \frac{1}{2\Delta t}$$
+<p>
+Any high-frequency content above $f_{\text{Nyq}}$ will fold back (alias) into the lower frequency spectrum, masquerading as spurious low-frequency vibrations! Always employ hardware analog anti-aliasing low-pass filters prior to ADC digitization.
+</p>
+</div>
+</div>
+</section>
+
+<!-- Section 3: Interactive Simulation -->
+<section class="lesson-section" id="sec-simulation">
+<div class="section-header">
+<div class="section-tag">02 · Interactive Computational Lab</div>
+<h2>2.2 Interactive Harmonic Synthesizer & Spectrum Analyzer</h2>
+<p>Adjust harmonic count and waveform composition to observe Gibbs phenomenon in the time domain and real-time DFT harmonic line spectra in the frequency domain.</p>
+</div>
+
+<div class="card">
+<div class="grid-2">
+<!-- Canvas 1: Time Domain -->
+<div>
+<div class="canvas-caption">
+<span>Time-Domain Synthesized Wave $x(t)$</span>
+<span class="mono">Real-Time Waveform</span>
+</div>
+<div class="canvas-box h-sim">
+<canvas id="canvas-lec02-time"></canvas>
+</div>
+<div class="scrubber-bar">
+<label for="slider-harmonics">Harmonic Count $N$:</label>
+<input type="range" id="slider-harmonics" min="1" max="15" step="1" value="5">
+<span class="scrubber-val" id="val-harmonics">5</span>
+</div>
+</div>
+
+<!-- Canvas 2: Frequency Spectrum -->
+<div>
+<div class="canvas-caption">
+<span>DFT Magnitude Spectrum $|X[k]|$</span>
+<span class="mono">Discrete Fourier Peaks</span>
+</div>
+<div class="canvas-box h-sim">
+<canvas id="canvas-lec02-freq"></canvas>
+</div>
+<div class="callout" style="margin-top: 14px; margin-bottom: 0;">
+<strong>Observation:</strong> As harmonic order increases, notice the overshoot at steep wave discontinuities—the classical <em>Gibbs phenomenon</em> (~8.95% overshoot).
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Section 4: Pedagogical Misconception Callout -->
+<section class="lesson-section" id="sec-misconceptions">
+<div class="callout-important">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+Common Misconception · Does Zero-Padding Improve Frequency Resolution?
+</div>
+<p style="margin: 0 0 8px 0;">
+A widespread misconception among junior data analysts is that appending zeros to a sampled vibration vector improves the true physical frequency resolution of an FFT.
+</p>
+<p style="margin: 0;">
+<strong>It does not.</strong> True physical frequency resolution $\Delta f$ is strictly determined by the total observation duration: $\Delta f = 1/T = 1/(N \Delta t)$. Appending zeros merely interpolates intermediate points along the continuous Fourier transform (sinc-curve interpolation) without adding a single bit of new information. To distinguish two tightly spaced mechanical modes (e.g., $100.0\text{ Hz}$ and $100.5\text{ Hz}$), you must record for a longer duration ($T \ge 2.0\text{ seconds}$).
+</p>
+</div>
+</section>
+
+<!-- Section 5: Check Your Understanding (Diagnostic Quiz) -->
+<section class="lesson-section" id="sec-quiz">
+<div class="section-header">
+<div class="section-tag">03 · Diagnostic Checkpoint</div>
+<h2>2.3 Check Your Understanding</h2>
+<p>Test your understanding of spectral resolution and windowing. Click an option to inspect diagnostic feedback.</p>
+</div>
+
+<div class="quiz-box">
+<div class="quiz-question">
+<strong>Question:</strong> An engineer samples gearbox vibration at $f_s = 2000\text{ Hz}$ for $T = 0.5\text{ seconds}$. What is the physical frequency resolution $\Delta f$ and the maximum detectable frequency without aliasing?
+</div>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false" data-explanation="1000 Hz is the Nyquist limit, but Delta f = 1/T = 1/0.5 = 2.0 Hz, not 1.0 Hz!">
+A. $\Delta f = 1.0\text{ Hz}$, $f_{\max} = 1000\text{ Hz}$.
+</div>
+<div class="quiz-opt" data-correct="true" data-explanation="Physical frequency bin spacing is Delta f = 1/T = 1/0.5 s = 2.0 Hz. The Nyquist frequency limit is fs / 2 = 2000 / 2 = 1000 Hz.">
+B. $\Delta f = 2.0\text{ Hz}$, $f_{\max} = 1000\text{ Hz}$.
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Delta f is reciprocal of total duration T, not 1/fs. 1/fs = 0.0005 s is the time sampling step!">
+C. $\Delta f = 0.5\text{ Hz}$, $f_{\max} = 2000\text{ Hz}$.
+</div>
+</div>
+<div class="quiz-feedback"></div>
+</div>
+</section>
+
+<!-- Section 6: Code -->
+<section class="lesson-section" id="sec-code">
+<div class="section-header">
+<div class="section-tag">04 · Computational Implementation</div>
+<h2>2.4 FFT Implementation in Python & MATLAB</h2>
+<p>Perform windowed FFT analysis and plot single-sided amplitude spectra.</p>
+</div>
+
+<div class="code-box">
+<div class="code-header">
+<div class="code-tabs">
+<button class="code-tab-btn active">Python (NumPy / SciPy)</button>
+<button class="code-tab-btn">MATLAB</button>
+</div>
+<button class="btn-copy">Copy Code</button>
+</div>
+<pre class="code-block"><code>import numpy as np
+import scipy.signal as signal
+
+# Sampling parameters
+fs = 2000.0          # Sampling rate (Hz)
+t = np.arange(0, 1.0, 1/fs)
+N = len(t)
+
+# Synthetic vibration signal with additive noise
+x = 2.0 * np.sin(2 * np.pi * 50.0 * t) + 1.2 * np.sin(2 * np.pi * 180.0 * t)
+x += 0.4 * np.random.normal(0, 1, N)
+
+# Apply Hann window to suppress spectral leakage
+window = np.hanning(N)
+X_fft = np.fft.rfft(x * window)
+freqs = np.fft.rfftfreq(N, 1/fs)
+magnitude = np.abs(X_fft) * (2.0 / np.sum(window))
+
+print(f"Sampling Rate: {fs} Hz | Resolution: {fs/N:.2f} Hz")
+print(f"Dominant frequencies detected: {freqs[np.argsort(magnitude)[-3:]]} Hz")</code></pre>
+<pre class="code-block" hidden><code>% MATLAB Implementation
+fs = 2000;
+t = 0:1/fs:1-1/fs;
+N = length(t);
+x = 2.0*sin(2*pi*50*t) + 1.2*sin(2*pi*180*t) + 0.4*randn(size(t));
+
+w = hann(N)';
+X = fft(x .* w);
+P2 = abs(X / sum(w));
+P1 = P2(1:N/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+f = fs*(0:(N/2))/N;
+
+plot(f, P1, 'LineWidth', 1.8, 'Color', [0.7, 0.38, 0.16]);
+xlabel('Frequency (Hz)'); ylabel('|P_1(f)|'); grid on;</code></pre>
+</div>
+</section>
+
+<!-- Section 7: Course Materials Downloads -->
+<section class="lesson-section" id="sec-materials">
+<div class="section-header">
+<div class="section-tag">05 · Lecture Resources</div>
+<h2>2.5 Materials & Notebooks</h2>
+<p>Download the official presentation slides and supporting interactive Jupyter notebook for Lecture 02.</p>
+</div>
+
+<div class="download-bar">
+<a href="slides.pdf" download class="btn-download-primary">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+Download Slides (PDF)
+</a>
+<a href="notebook.ipynb" download class="btn-download-secondary">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+Download Jupyter Notebook (.ipynb)
+</a>
+</div>
+</section>
+
+</main>
+
+<!-- Footer Navigation -->
+<footer class="footer-band">
+<div class="footer-inner">
+<div>
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering · Fall Term 2026</div>
+</div>
+<div>
+<a href="../01-washing-machine-shake/index.html">← Prev: Lec 01 Washing Machine Shake</a> · 
+<a href="../../index.html">All Tutorials Hub</a> · 
+<a href="../03-multi-dof-systems/index.html">Next: Lec 03 Multi-DOF Systems →</a>
+</div>
+</div>
+</footer>
+```

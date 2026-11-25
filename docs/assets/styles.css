@@ -1,0 +1,22 @@
+@import url("./css/vibrations-theme.css");
+
+/* Reset any Quarto / Pandoc default overrides */
+#title-block-header {
+  display: none !important;
+}
+
+.quarto-title-block {
+  display: none !important;
+}
+
+#quarto-content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+main.content {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}

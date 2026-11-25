@@ -1,0 +1,227 @@
+---
+pagetitle: "Lecture 05: Nonlinear ODEs in Mechanics"
+page-layout: custom
+---
+
+```{=html}
+<!-- Sticky Topbar Navigation -->
+<header class="topbar">
+<div class="topbar-inner">
+<a href="../../index.html" class="brand">
+<div class="brand-mark">05</div>
+<div class="brand-meta">
+<div class="brand-title">Lec 05: Nonlinear ODEs</div>
+<div class="brand-sub">NMED 5XX · All Tutorials</div>
+</div>
+</a>
+<nav class="chapter-nav">
+<a href="#sec-outcomes" class="active">Outcomes</a>
+<a href="#sec-theory">Theory</a>
+<a href="#sec-phase">Phase Space</a>
+<a href="#sec-misconceptions">Key Insights</a>
+<a href="#sec-quiz">Quiz</a>
+<a href="#sec-code">Code</a>
+<a href="#sec-materials">Materials</a>
+</nav>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light/Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-band" id="top">
+<div class="hero-inner">
+<div class="eyebrow">Lecture 05 · Geometric & Nonlinear Mechanics</div>
+<div class="copper-bar"></div>
+<h1>Nonlinear ODEs in Mechanics: Phase Space & The Simple Pendulum</h1>
+<p class="hero-lead">
+Move beyond small-angle linear approximations. Formulate conservative <span class="highlight-blue">nonlinear equations of motion</span>, 
+map the global cylindrical <span class="highlight-orange">phase portrait $(\theta, \dot{\theta})$</span>, trace the homoclinic 
+<span class="highlight-teal">separatrix boundary</span>, and evaluate exact period elongation using complete elliptic integrals.
+</p>
+</div>
+</section>
+
+<main class="page-wrap">
+
+<!-- Section 1: Outcomes -->
+<section class="lesson-section" id="sec-outcomes">
+<div class="callout-tip">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+Learning Outcomes
+</div>
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Formulate</strong> the exact non-approximated nonlinear equation $\ddot{\theta} + \omega_0^2 \sin\theta = 0$.</li>
+<li><strong>Construct</strong> the first integral of energy $E(\theta, \dot{\theta}) = \text{const}$ and trace constant-energy orbits in phase space.</li>
+<li><strong>Locate & classify</strong> center equilibrium points $(0,0)$ and inverted saddle points $(\pm\pi, 0)$.</li>
+<li><strong>Compute</strong> exact oscillation periods using complete elliptic integrals of the first kind $K(k)$.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: Theory -->
+<section class="lesson-section" id="sec-theory">
+<div class="section-header">
+<div class="section-tag">01 · Nonlinear Dynamics</div>
+<h2>5.1 The Exact Simple Pendulum</h2>
+<p>For a point mass $m$ suspended by a rigid, massless rod of length $L$ swinging in a vertical plane under gravity $g$:</p>
+</div>
+
+<div class="card">
+<div class="eq-box">
+$$\ddot{\theta}(t) + \omega_0^2 \sin\theta(t) = 0, \quad \omega_0 = \sqrt{\frac{g}{L}}$$
+</div>
+
+<p>
+Multiplying by $\dot{\theta}$ and integrating once with respect to time yields the Hamiltonian energy conservation law:
+</p>
+
+<div class="eq-box">
+$$E = \frac{1}{2} m L^2 \dot{\theta}^2 + m g L (1 - \cos\theta) = \text{constant}$$
+</div>
+
+<p>
+Unlike the harmonic oscillator where period $T_0 = 2\pi/\omega_0$ is completely independent of amplitude (isochronous), the nonlinear pendulum's period stretches as initial release angle $\theta_0$ increases:
+</p>
+
+<div class="eq-box">
+$$T(\theta_0) = \frac{4}{\omega_0} K\left(\sin\frac{\theta_0}{2}\right) = T_0 \left(1 + \frac{1}{16}\theta_0^2 + \frac{11}{3072}\theta_0^4 + \dots\right)$$
+</div>
+</div>
+</section>
+
+<!-- Section 3: Phase Space -->
+<section class="lesson-section" id="sec-phase">
+<div class="section-header">
+<div class="section-tag">02 · Geometric Topology</div>
+<h2>5.2 Cylindrical Phase Space & The Homoclinic Separatrix</h2>
+<p>The state plane $(\theta, \dot{\theta})$ is naturally $2\pi$-periodic in angle, forming a phase cylinder.</p>
+</div>
+
+<div class="card">
+<div class="callout">
+<strong>• Closed Libration Orbits ($E < 2mgL$):</strong> Concentric oval orbits around the stable downward center $(0,0)$ representing bounded back-and-forth oscillation.<br>
+<strong>• The Homoclinic Separatrix ($E = 2mgL$):</strong> Critical energy boundary connecting the unstable inverted upright equilibrium points $(\pm\pi, 0)$. A trajectory released exactly on the separatrix requires infinite time ($T \to \infty$) to reach the apex.<br>
+<strong>• Continuous Whirling Motion ($E > 2mgL$):</strong> Open, undulating phase trajectories where the pendulum has sufficient kinetic energy to spin over the top continuously.
+</div>
+</div>
+</section>
+
+<!-- Section 4: Misconceptions -->
+<section class="lesson-section" id="sec-misconceptions">
+<div class="callout-important">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+Common Misconception · Is the Small-Angle Approximation Valid up to 45°?
+</div>
+<p style="margin: 0 0 8px 0;">
+Textbooks often claim $\sin\theta \approx \theta$ is acceptable for "small angles," leading engineers to apply it casually up to $45^\circ$.
+</p>
+<p style="margin: 0;">
+At $\theta_0 = 45^\circ$ ($0.785\text{ rad}$), the period error is already $+3.9\%$. In precision clockwork or seismic sensors, this accumulates into massive phase drift over several cycles! For $\theta_0 = 90^\circ$, the exact period is $+18.0\%$ longer than $T_0$, and at $\theta_0 = 175^\circ$, the period is more than $300\%$ longer!
+</p>
+</div>
+</section>
+
+<!-- Section 5: Quiz -->
+<section class="lesson-section" id="sec-quiz">
+<div class="section-header">
+<div class="section-tag">03 · Diagnostic Checkpoint</div>
+<h2>5.3 Check Your Understanding</h2>
+<p>Test your understanding of nonlinear pendulum dynamics.</p>
+</div>
+
+<div class="quiz-box">
+<div class="quiz-question">
+<strong>Question:</strong> What happens to the period $T(\theta_0)$ of a conservative simple pendulum as the initial release angle $\theta_0 \to \pi$ ($180^\circ$ upright)?
+</div>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false" data-explanation="Period elongation is dramatic and unbounded near the inverted equilibrium point!">
+A. It remains equal to the linear period $2\pi\sqrt{L/g}$.
+</div>
+<div class="quiz-opt" data-correct="true" data-explanation="As theta0 approaches pi, the trajectory approaches the homoclinic separatrix orbit entering the saddle point (pi, 0). Near a saddle fixed point, velocity approaches zero, causing the period T to diverge logarithmically to infinity: T -> infinity!">
+B. The period diverges logarithmically toward infinity ($T \to \infty$).
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Period increases monotonically with amplitude; it never drops to zero!">
+C. The period approaches zero because potential energy is maximized.
+</div>
+</div>
+<div class="quiz-feedback"></div>
+</div>
+</section>
+
+<!-- Section 6: Code -->
+<section class="lesson-section" id="sec-code">
+<div class="section-header">
+<div class="section-tag">04 · Computational Implementation</div>
+<h2>5.4 Exact Elliptic Period & Phase Orbit Integration</h2>
+<p>Compute exact periods using complete elliptic integrals and integrate nonlinear trajectories with SciPy.</p>
+</div>
+
+<div class="code-box">
+<div class="code-header">
+<div class="code-tabs">
+<button class="code-tab-btn active">Python (SciPy ellipk / solve_ivp)</button>
+</div>
+<button class="btn-copy">Copy Code</button>
+</div>
+<pre class="code-block"><code>import numpy as np
+from scipy.special import ellipk
+from scipy.integrate import solve_ivp
+
+g, L = 9.81, 1.0
+w0 = np.sqrt(g / L)
+T0 = 2 * np.pi / w0
+
+# Exact Period vs Linear Period for theta0 = 90 deg
+theta0 = np.radians(90.0)
+k = np.sin(theta0 / 2)
+T_exact = (4.0 / w0) * ellipk(k**2)
+
+print(f"Linear Period T0: {T0:.4f} s")
+print(f"Exact Nonlinear Period T(90 deg): {T_exact:.4f} s (Ratio: {T_exact/T0:.3f})")
+
+# Numerical Phase Plane Integration
+def pendulum_ode(t, y):
+    theta, omega = y
+    return [omega, -w0**2 * np.sin(theta)]
+
+sol = solve_ivp(pendulum_ode, [0, 10], [theta0, 0.0], max_step=0.01)</code></pre>
+</div>
+</section>
+
+<!-- Section 7: Materials -->
+<section class="lesson-section" id="sec-materials">
+<div class="section-header">
+<div class="section-tag">05 · Lecture Resources</div>
+<h2>5.5 Materials & Notebooks</h2>
+<p>Download the official presentation slides and supporting interactive Jupyter notebook for Lecture 05.</p>
+</div>
+
+<div class="download-bar">
+<a href="slides.pdf" download class="btn-download-primary">Download Slides (PDF)</a>
+<a href="notebook.ipynb" download class="btn-download-secondary">Download Jupyter Notebook (.ipynb)</a>
+</div>
+</section>
+
+</main>
+
+<!-- Footer Navigation -->
+<footer class="footer-band">
+<div class="footer-inner">
+<div>
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering · Fall Term 2026</div>
+</div>
+<div>
+<a href="../04-eigen-decomposition/index.html">← Prev: Lec 04 Eigen & DMD</a> · 
+<a href="../../index.html">All Tutorials Hub</a> · 
+<a href="../06-phase-portraits-stability/index.html">Next: Lec 06 Stability →</a>
+</div>
+</div>
+</footer>
+```

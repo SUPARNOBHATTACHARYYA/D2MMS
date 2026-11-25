@@ -1,0 +1,16 @@
+number: 7
+title: "Numerical Solution of ODEs: Runge-Kutta, Stiffness & Step Size Control"
+slug: "07-numerical-odes"
+date: "2026-09-29"
+tags:
+  - "Runge-Kutta"
+  - "Dahlquist Stability"
+  - "Stiffness"
+  - "Adaptive Step Size"
+takeaways:
+  - "Derive Butcher tableau and order conditions for explicit Runge-Kutta integrators."
+  - "Map absolute stability regions in the complex lambda*dt plane for Euler and RK4."
+  - "Understand numerical stiffness and why implicit schemes (A-stable) are required for stiff mechanics."
+tasks:
+  - "Simulate stiff flame-kinetics / mass-spring system with explicit RK4 vs implicit backward Euler."
+  - "Implement an embedded RK4(5) Fehlberg / Dormand-Prince adaptive step-size controller."

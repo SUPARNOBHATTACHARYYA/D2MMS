@@ -1,0 +1,16 @@
+number: 3
+title: "Multi-DOF Systems: Coupled Equations and Modal Superposition"
+slug: "03-multi-dof-systems"
+date: "2026-09-15"
+tags:
+  - "Multi-DOF"
+  - "Coupled Systems"
+  - "Normal Modes"
+  - "Modal Superposition"
+takeaways:
+  - "Assemble global mass and stiffness matrices M and K for discrete mechanical networks."
+  - "Formulate and solve generalized eigenvalue problem det(K - omega^2 M) = 0."
+  - "Uncouple linear multi-DOF equations into independent single-degree modal oscillators."
+tasks:
+  - "Compute natural frequencies and mode shapes for a 3-storey building shear model."
+  - "Simulate time-domain response using modal superposition vs direct numerical ODE integration."

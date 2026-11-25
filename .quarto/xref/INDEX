@@ -1,0 +1,32 @@
+{
+  "index.qmd": {
+    "index.html": "fadb59f3"
+  },
+  "tests/fixtures/lectures/01-intro-example/index.qmd": {
+    "index.html": "7bb0d041"
+  },
+  "lectures/01-intro-example/index.qmd": {
+    "index.html": "2dd12284"
+  },
+  "lectures/01-washing-machine-shake/index.qmd": {
+    "index.html": "33e30400"
+  },
+  "lectures/02-fourier-transform-fft/index.qmd": {
+    "index.html": "4ab08c78"
+  },
+  "lectures/03-multi-dof-systems/index.qmd": {
+    "index.html": "bd2fb6f6"
+  },
+  "lectures/04-eigen-decomposition/index.qmd": {
+    "index.html": "6833083f"
+  },
+  "lectures/05-nonlinear-odes/index.qmd": {
+    "index.html": "7f7e7f3e"
+  },
+  "lectures/06-phase-portraits-stability/index.qmd": {
+    "index.html": "60297c3c"
+  },
+  "lectures/07-numerical-odes/index.qmd": {
+    "index.html": "9b9cd97d"
+  }
+}

@@ -1,0 +1,214 @@
+---
+pagetitle: "Lecture 06: Phase Portraits & Stability Analysis"
+page-layout: custom
+---
+
+```{=html}
+<!-- Sticky Topbar Navigation -->
+<header class="topbar">
+<div class="topbar-inner">
+<a href="../../index.html" class="brand">
+<div class="brand-mark">06</div>
+<div class="brand-meta">
+<div class="brand-title">Lec 06: Stability Analysis</div>
+<div class="brand-sub">NMED 5XX · All Tutorials</div>
+</div>
+</a>
+<nav class="chapter-nav">
+<a href="#sec-outcomes" class="active">Outcomes</a>
+<a href="#sec-theory">Jacobian</a>
+<a href="#sec-stability">Stability Plane</a>
+<a href="#sec-misconceptions">Key Insights</a>
+<a href="#sec-quiz">Quiz</a>
+<a href="#sec-code">Code</a>
+<a href="#sec-materials">Materials</a>
+</nav>
+<div class="topbar-actions">
+<button id="theme-toggle-btn" class="btn-nav" aria-label="Toggle Light/Dark Theme">
+<span>🌙 Dark</span>
+</button>
+</div>
+</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-band" id="top">
+<div class="hero-inner">
+<div class="eyebrow">Lecture 06 · Dynamical Systems & Nonlinear Stability</div>
+<div class="copper-bar"></div>
+<h1>Phase Portraits & Stability Analysis: Invariant Manifolds & Limit Cycles</h1>
+<p class="hero-lead">
+Locate equilibrium points and classify their local topology in the <span class="highlight-blue">trace-determinant plane $(\tau, \Delta)$</span> 
+of the Jacobian matrix. Map stable and unstable <span class="highlight-orange">invariant manifolds</span>, and explore 
+isolated self-excited periodic orbits—<span class="highlight-teal">limit cycles</span>—in the Van der Pol oscillator.
+</p>
+</div>
+</section>
+
+<main class="page-wrap">
+
+<!-- Section 1: Outcomes -->
+<section class="lesson-section" id="sec-outcomes">
+<div class="callout-tip">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+Learning Outcomes
+</div>
+<ul style="margin: 0; padding-left: 20px;">
+<li><strong>Linearize</strong> nonlinear planar vector fields $\dot{\mathbf{x}} = \mathbf{f}(\mathbf{x})$ around fixed points via the Jacobian matrix $\mathbf{J}$.</li>
+<li><strong>Classify</strong> equilibrium stability (saddle, stable node, stable focus, center, unstable node) using $\tau = \operatorname{tr}(\mathbf{J})$ and $\Delta = \det(\mathbf{J})$.</li>
+<li><strong>Map</strong> invariant stable and unstable manifold boundaries that partition basins of dynamic attraction.</li>
+<li><strong>Simulate</strong> limit cycles and relaxation oscillations in self-excited mechanical systems.</li>
+</ul>
+</div>
+</section>
+
+<!-- Section 2: Theory -->
+<section class="lesson-section" id="sec-theory">
+<div class="section-header">
+<div class="section-tag">01 · Local Linearization</div>
+<h2>6.1 The Jacobian Matrix & Characteristic Roots</h2>
+<p>For an autonomous planar dynamical system $\dot{x}_1 = f_1(x_1, x_2)$, $\dot{x}_2 = f_2(x_1, x_2)$ with equilibrium fixed point $\mathbf{x}^*$:</p>
+</div>
+
+<div class="card">
+<div class="eq-box">
+$$\mathbf{J} = \left.\begin{bmatrix} \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} \\ \frac{\partial f_2}{\partial x_1} & \frac{\partial f_2}{\partial x_2} \end{bmatrix}\right|_{\mathbf{x}^*}, \quad \lambda^2 - \tau \lambda + \Delta = 0$$
+</div>
+
+<p>
+Where the trace $\tau$ and determinant $\Delta$ evaluate directly to:
+</p>
+
+<div class="eq-box">
+$$\tau = \operatorname{tr}(\mathbf{J}) = \lambda_1 + \lambda_2, \quad \Delta = \det(\mathbf{J}) = \lambda_1 \lambda_2 \quad \implies \quad \lambda_{1,2} = \frac{\tau \pm \sqrt{\tau^2 - 4\Delta}}{2}$$
+</div>
+</div>
+</section>
+
+<!-- Section 3: Stability Plane -->
+<section class="lesson-section" id="sec-stability">
+<div class="section-header">
+<div class="section-tag">02 · Geometric Topology</div>
+<h2>6.2 The Trace-Determinant Diagram</h2>
+<p>The parabola $\tau^2 - 4\Delta = 0$ partitions the $(\tau, \Delta)$ parameter plane into distinct topological regimes.</p>
+</div>
+
+<div class="card">
+<div class="callout">
+<strong>• Saddle Points ($\Delta < 0$):</strong> One positive and one negative real eigenvalue; always unstable with distinct incoming (stable) and outgoing (unstable) invariant manifolds.<br>
+<strong>• Stable Nodes ($\Delta > 0, \tau < 0, \tau^2 > 4\Delta$):</strong> Real negative eigenvalues; pure exponential decay without oscillation.<br>
+<strong>• Stable Spirals ($\Delta > 0, \tau < 0, \tau^2 < 4\Delta$):</strong> Complex conjugate eigenvalues with negative real part; decaying oscillatory trajectories.<br>
+<strong>• Center Points ($\tau = 0, \Delta > 0$):</strong> Purely imaginary eigenvalues; neutrally stable continuous concentric orbits.<br>
+<strong>• Hopf Bifurcation ($\tau$ crosses zero with $\Delta > 0$):</strong> Transition from stable focus to unstable focus with the spontaneous birth of an isolated limit cycle.
+</div>
+</div>
+</section>
+
+<!-- Section 4: Misconceptions -->
+<section class="lesson-section" id="sec-misconceptions">
+<div class="callout-important">
+<div class="callout-title">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+Common Misconception · Are Limit Cycles Just Linear Harmonic Oscillations?
+</div>
+<p style="margin: 0 0 8px 0;">
+Students often view limit cycles as simple periodic orbits identical to undamped mass-spring harmonic oscillations.
+</p>
+<p style="margin: 0;">
+<strong>They are fundamentally different.</strong> In a linear conservative system, there are infinite continuous families of periodic orbits—perturbing the amplitude creates a new orbit. In contrast, a <em>limit cycle</em> is an <strong>isolated periodic trajectory</strong> in a dissipative, self-excited nonlinear system. Perturbed trajectories inside or outside the limit cycle are drawn into it asymptotically!
+</p>
+</div>
+</section>
+
+<!-- Section 5: Quiz -->
+<section class="lesson-section" id="sec-quiz">
+<div class="section-header">
+<div class="section-tag">03 · Diagnostic Checkpoint</div>
+<h2>6.3 Check Your Understanding</h2>
+<p>Test your understanding of the trace-determinant stability plane.</p>
+</div>
+
+<div class="quiz-box">
+<div class="quiz-question">
+<strong>Question:</strong> An autonomous system linearized about fixed point $(0,0)$ yields Jacobian matrix $\mathbf{J} = \begin{bmatrix} -2 & 3 \\ -4 & -1 \end{bmatrix}$. What is the topological classification of this equilibrium point?
+</div>
+<div class="quiz-options">
+<div class="quiz-opt" data-correct="false" data-explanation="Delta = (-2)(-1) - (3)(-4) = 2 + 12 = 14 > 0. Since Delta > 0, it CANNOT be a saddle point!">
+A. Saddle point.
+</div>
+<div class="quiz-opt" data-correct="true" data-explanation="Trace tau = -2 + (-1) = -3 < 0. Determinant Delta = (-2)(-1) - (3)(-4) = 2 + 12 = 14 > 0. Check discriminant: tau^2 - 4*Delta = (-3)^2 - 4(14) = 9 - 56 = -47 < 0. Since Delta > 0, tau < 0, and discriminant < 0, the eigenvalues are complex conjugate with negative real part: a Stable Focus (Spiral)!">
+B. Stable Spiral (Focus).
+</div>
+<div class="quiz-opt" data-correct="false" data-explanation="Discriminant tau^2 - 4*Delta = 9 - 56 = -47 < 0, which yields complex eigenvalues with oscillations, not real non-oscillatory node decay.">
+C. Stable Node.
+</div>
+</div>
+<div class="quiz-feedback"></div>
+</div>
+</section>
+
+<!-- Section 6: Code -->
+<section class="lesson-section" id="sec-code">
+<div class="section-header">
+<div class="section-tag">04 · Computational Implementation</div>
+<h2>6.4 Van der Pol Limit Cycle Integration</h2>
+<p>Simulate phase portraits and asymptotic convergence to the Van der Pol limit cycle in Python.</p>
+</div>
+
+<div class="code-box">
+<div class="code-header">
+<div class="code-tabs">
+<button class="code-tab-btn active">Python (SciPy solve_ivp)</button>
+</div>
+<button class="btn-copy">Copy Code</button>
+</div>
+<pre class="code-block"><code>import numpy as np
+from scipy.integrate import solve_ivp
+
+# Van der Pol Oscillator: x'' - mu*(1 - x^2)*x' + x = 0
+mu = 1.0
+
+def vdp_system(t, state):
+    x, y = state
+    return [y, mu * (1.0 - x**2) * y - x]
+
+# Integrate from interior and exterior initial states
+sol_inner = solve_ivp(vdp_system, [0, 30], [0.1, 0.1], max_step=0.02)
+sol_outer = solve_ivp(vdp_system, [0, 30], [3.0, 3.0], max_step=0.02)
+
+print("Both trajectories converge asymptotically onto the unique isolated limit cycle!")</code></pre>
+</div>
+</section>
+
+<!-- Section 7: Materials -->
+<section class="lesson-section" id="sec-materials">
+<div class="section-header">
+<div class="section-tag">05 · Lecture Resources</div>
+<h2>6.5 Materials & Notebooks</h2>
+<p>Download the official presentation slides and supporting interactive Jupyter notebook for Lecture 06.</p>
+</div>
+
+<div class="download-bar">
+<a href="slides.pdf" download class="btn-download-primary">Download Slides (PDF)</a>
+<a href="notebook.ipynb" download class="btn-download-secondary">Download Jupyter Notebook (.ipynb)</a>
+</div>
+</section>
+
+</main>
+
+<!-- Footer Navigation -->
+<footer class="footer-band">
+<div class="footer-inner">
+<div>
+<div class="footer-brand-title">Data-Driven Modelling for Mechanical Systems</div>
+<div>Graduate Mechanical Engineering · Fall Term 2026</div>
+</div>
+<div>
+<a href="../05-nonlinear-odes/index.html">← Prev: Lec 05 Nonlinear ODEs</a> · 
+<a href="../../index.html">All Tutorials Hub</a> · 
+<a href="../07-numerical-odes/index.html">Next: Lec 07 Numerical ODEs →</a>
+</div>
+</div>
+</footer>
+```

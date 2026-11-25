@@ -1,0 +1,28 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "index.qmd"
+    - "lectures/01-washing-machine-shake/index.qmd"
+    - "lectures/02-fourier-transform-fft/index.qmd"
+    - "lectures/03-multi-dof-systems/index.qmd"
+    - "lectures/04-eigen-decomposition/index.qmd"
+    - "lectures/05-nonlinear-odes/index.qmd"
+    - "lectures/06-phase-portraits-stability/index.qmd"
+    - "lectures/07-numerical-odes/index.qmd"
+  resources:
+    - "lectures/**/*.pdf"
+    - "lectures/**/*.ipynb"
+    - "assets/**"
+    - ".nojekyll"
+
+website:
+  title: "Data-Driven Modelling for Mechanical Systems"
+  site-url: "."
+
+format:
+  html:
+    theme: none
+    include-in-header: assets/head.html
+    include-after-body: assets/foot.html
+    smooth-scroll: true
